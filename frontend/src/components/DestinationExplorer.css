@@ -1,0 +1,11 @@
+.roamly-marker { background: transparent; border: 0; }
+.roamly-marker span { display: grid; width: 38px; height: 38px; place-items: center; color: #153a34; background: #d6fb72; border: 3px solid #153a34; border-radius: 50% 50% 50% 0; box-shadow: 0 6px 18px rgba(17, 44, 39, .35); font-size: 16px; transform: rotate(-45deg); animation: marker-pop .55s ease-out both, marker-pulse 1.8s ease-in-out .55s infinite; }
+.roamly-marker span::first-letter { display: inline-block; transform: rotate(45deg); }
+.roamly-marker span { text-shadow: none; }
+.roamly-marker span { line-height: 1; }
+.roamly-marker span { }
+.leaflet-custom-controls { position: absolute; right: 16px; bottom: 24px; z-index: 1000; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.8); border-radius: 12px; box-shadow: 0 8px 24px rgba(17,44,39,.2); }
+.leaflet-custom-controls button { width: 38px; height: 38px; color: #173b35; background: rgba(255,255,255,.95); border: 0; border-bottom: 1px solid #d9e2d5; font-size: 19px; cursor: pointer; }
+.leaflet-custom-controls button:last-child { border-bottom: 0; font-size: 17px; }.leaflet-custom-controls button:hover { background: #d6fb72; }
+@keyframes marker-pop { from { opacity: 0; transform: translateY(-22px) rotate(-45deg) scale(.65); } to { opacity: 1; transform: translateY(0) rotate(-45deg) scale(1); } }
+@keyframes marker-pulse { 50% { box-shadow: 0 6px 18px rgba(17,44,39,.35), 0 0 0 8px rgba(214,251,114,.22); } }

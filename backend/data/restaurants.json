@@ -1,0 +1,4 @@
+[
+  {"id":"local-restaurant-spice","name":"The Spice Table","address":"Central District","rating":4.6,"reviewCount":810,"priceLevel":"PRICE_LEVEL_MODERATE","category":"Indian","categories":["Indian","Vegetarian"],"distanceKm":1.1,"openNow":true},
+  {"id":"local-restaurant-garden","name":"Garden Kitchen","address":"Riverside Quarter","rating":4.5,"reviewCount":524,"priceLevel":"PRICE_LEVEL_MODERATE","category":"Mediterranean","categories":["Mediterranean","Cafe"],"distanceKm":2.4,"openNow":true}
+]

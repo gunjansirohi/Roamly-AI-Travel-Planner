@@ -1,0 +1,4 @@
+[
+  {"id":"local-hotel-grand","name":"Grand Plaza Hotel","address":"Central District","rating":4.7,"reviewCount":1240,"priceLevel":"PRICE_LEVEL_EXPENSIVE","category":"Luxury","distanceKm":1.2,"nightlyRate":235,"currency":"USD","discountPercent":15,"cancellationPolicy":"Free cancellation until 48 hours before check-in","availability":"Limited availability","amenities":["Free Wi-Fi","Parking","Swimming pool","Gym","Restaurant","Breakfast included","Air conditioning"]},
+  {"id":"local-hotel-garden","name":"Garden Retreat","address":"Riverside Quarter","rating":4.5,"reviewCount":640,"priceLevel":"PRICE_LEVEL_MODERATE","category":"Family","distanceKm":2.8,"nightlyRate":130,"currency":"USD","discountPercent":0,"cancellationPolicy":"Free cancellation until 48 hours before check-in","availability":"Available"}
+]

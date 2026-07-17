@@ -1,0 +1,3 @@
+[
+  {"id":"local-flight-1","airline":"Air India","airlineCode":"AI","flightNumber":"AI120","duration":"PT2H15M","durationMinutes":135,"stops":0,"cabin":"ECONOMY","price":7200,"currency":"INR","baggage":"Cabin bag included","fareRules":"Changes and refunds are subject to airline fare conditions."}
+]

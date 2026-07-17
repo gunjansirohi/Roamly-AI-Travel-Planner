@@ -1,0 +1,2 @@
+import { useEffect } from "react";
+export default function Toast({ message, type = "success", onClose }) { useEffect(() => { if (!message) return; const id = setTimeout(onClose, 4500); return () => clearTimeout(id); }, [message, onClose]); return message ? <div className={`auth-toast ${type}`} role={type === "error" ? "alert" : "status"}>{message}<button onClick={onClose} aria-label="Dismiss">×</button></div> : null; }

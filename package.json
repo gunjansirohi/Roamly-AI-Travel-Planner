@@ -1,40 +1,19 @@
 {
   "name": "ai-travel-planner",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.5",
-    "react-scripts": "5.0.1",
-    "styled-components": "^5.3.8",
-    "web-vitals": "^2.1.4"
-  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "concurrently --kill-others-on-fail --names API,WEB --prefix-colors green,cyan \"npm run backend\" \"npm run frontend\"",
+    "dev": "npm run dev --workspace=backend",
+    "frontend": "npm run start --workspace=frontend",
+    "backend": "npm run dev --workspace=backend",
+    "build": "npm run build --workspace=frontend"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "concurrently": "^10.0.3"
   }
 }
