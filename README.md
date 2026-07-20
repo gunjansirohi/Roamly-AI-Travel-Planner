@@ -47,7 +47,7 @@ Configure the backend with your deployment platform's environment-variable setti
 Build the frontend with the public API origin. This value is compiled into the browser bundle, so it must not contain a secret:
 
 ```powershell
-$env:REACT_APP_API_BASE_URL = "https://api.example.com"
+$env:VITE_API_URL = "https://api.example.com"
 npm run build
 ```
 
@@ -59,4 +59,4 @@ Build and run both services locally in production mode:
 docker compose up --build
 ```
 
-Open `http://localhost:8080`. For a public deployment, change the frontend build argument `REACT_APP_API_BASE_URL` and backend `CLIENT_ORIGINS` to the final HTTPS domains, and add provider keys through the platform's secret manager.
+Open `http://localhost:8080`. For a public deployment, change the frontend build argument `VITE_API_URL` and backend `CLIENT_ORIGINS` to the final HTTPS domains, and add provider keys through the platform's secret manager.

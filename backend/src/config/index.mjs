@@ -14,7 +14,7 @@ try {
 } catch {
   // A missing or malformed .env file must not prevent the API from starting.
 }
-const clientOrigins = (process.env.CLIENT_URL || "")
+const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_URL || "")
   .split(",")
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
