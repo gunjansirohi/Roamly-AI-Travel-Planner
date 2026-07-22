@@ -9,7 +9,7 @@ const categories = ["All", "Indian", "Chinese", "Italian", "Mexican", "Japanese"
 const sortingOptions = ["Highest Rated", "Nearest", "Lowest Price", "Highest Price", "Most Popular"];
 const priceLabels = { PRICE_LEVEL_FREE: "Free", PRICE_LEVEL_INEXPENSIVE: "$", PRICE_LEVEL_MODERATE: "$$", PRICE_LEVEL_EXPENSIVE: "$$$", PRICE_LEVEL_VERY_EXPENSIVE: "$$$$", PRICE_LEVEL_UNSPECIFIED: "Price unavailable" };
 const priceRank = (price) => ["PRICE_LEVEL_FREE", "PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE", "PRICE_LEVEL_EXPENSIVE", "PRICE_LEVEL_VERY_EXPENSIVE"].indexOf(price);
-const imageUrl = (photoName) => photoName?.startsWith("destination:") ? `/api/place-photos/fallback?city=${photoName.split(":")[1]}&slot=${photoName.split(":")[2]}` : `/api/restaurants/photo?name=${encodeURIComponent(photoName || "")}`;
+const imageUrl = (photoName) => photoName?.startsWith("destination:") ? apiUrl(`/api/place-photos/fallback?city=${encodeURIComponent(photoName.split(":")[1])}&slot=${encodeURIComponent(photoName.split(":")[2])}`) : apiUrl(`/api/restaurants/photo?name=${encodeURIComponent(photoName || "")}`);
 
 export default function RestaurantRecommendations({ destination }) {
   const { user } = useAuth();
@@ -63,7 +63,7 @@ export default function RestaurantRecommendations({ destination }) {
 }
 
 function RestaurantCard({ restaurant, city, index, onOpen }) {
-  const fallback = `/api/place-photos/fallback?city=${encodeURIComponent(city)}&slot=${index}`;
+  const fallback = apiUrl(`/api/place-photos/fallback?city=${encodeURIComponent(city)}&slot=${index}`);
   const [image, setImage] = useState(imageUrl(restaurant.photoName));
   return <motion.article layout className="restaurant-card" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.035, 0.28) }} onClick={onOpen} tabIndex="0" role="button" onKeyDown={(event) => event.key === "Enter" && onOpen()}>
     <div className="restaurant-image"><img src={image} alt={restaurant.name} loading="lazy" decoding="async" onError={() => setImage(fallback)} /><span>{restaurant.category || "Restaurant"}</span></div>

@@ -115,16 +115,24 @@ app.delete("/api/favorites/:kind/:placeId", requireAuth, async (request, respons
 });
 
 app.get("/api/destinations/search", async (request, response) => {
+  const requestId = createRequestId();
   const query = String(request.query.q || "").trim();
-  if (query.length < 3 || query.length > 120) return sendError(response, 400, "Enter at least three characters to search destinations.");
+  if (query.length < 3 || query.length > 120) return sendError(response, 400, "Enter between 3 and 120 characters to search destinations.", requestId);
   try {
-    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=${encodeURIComponent(query)}`, { headers: { "User-Agent": "RoamlyTravelPlanner/1.0" } });
-    if (!result.ok) throw new Error("destination search unavailable");
-    return response.json({ success: true, destinations: await result.json() });
+    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=${encodeURIComponent(query)}`, { headers: { Accept: "application/json", "User-Agent": "RoamlyTravelPlanner/1.0" } });
+    if (!result.ok) throw Object.assign(new Error(`Destination provider returned ${result.status}.`), { status: result.status });
+    const destinations = await result.json();
+    if (!Array.isArray(destinations)) throw new Error("Destination provider returned an invalid response.");
+    return response.json({ success: true, destinations, fallback: false, requestId });
   } catch (error) {
-    console.error("[destination-search] fallback", error.message);
-    const destinations = (await localData("popularDestinations")).filter((item) => item.name.toLowerCase().includes(query.toLowerCase()) || item.country.toLowerCase().includes(query.toLowerCase())).map((item, index) => ({ place_id: `local-${index}`, name: item.name, display_name: `${item.name}, ${item.country}`, lat: String(item.latitude), lon: String(item.longitude), address: { country: item.country } }));
-    return response.json({ success: true, destinations, fallback: true });
+    console.warn(`[${requestId}] Destination provider unavailable; using local results.`, { message: error?.message || String(error) });
+    try {
+      const destinations = (await localData("popularDestinations")).filter((item) => item.name.toLowerCase().includes(query.toLowerCase()) || item.country.toLowerCase().includes(query.toLowerCase())).map((item, index) => ({ place_id: `local-${index}`, name: item.name, display_name: `${item.name}, ${item.country}`, lat: String(item.latitude), lon: String(item.longitude), address: { country: item.country } }));
+      return response.json({ success: true, destinations, fallback: true, message: "Live destination search is unavailable; showing verified local results.", requestId });
+    } catch (fallbackError) {
+      console.error(`[${requestId}] Destination search failed.`, { provider: error?.message || String(error), fallback: fallbackError?.message || String(fallbackError) });
+      return sendError(response, 503, "Destination search is unavailable because neither the live provider nor local destination data could be reached.", requestId);
+    }
   }
 });
 

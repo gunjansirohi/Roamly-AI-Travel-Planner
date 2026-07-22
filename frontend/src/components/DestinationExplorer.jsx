@@ -54,11 +54,11 @@ function DestinationExplorer({ onPlanTrip }) {
       setSearching(true); setError("");
       try {
         const response = await fetch(apiUrl(`/api/destinations/search?q=${encodeURIComponent(term)}`), { signal: controller.signal });
-        if (!response.ok) throw new Error("Search failed");
-        const data = await response.json();
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.success) throw new Error(data?.error?.message || `Destination search failed (${response.status}).`);
         setSuggestions(data.destinations || []);
       } catch (requestError) {
-        if (requestError.name !== "AbortError") { setError("Destination search is temporarily unavailable. Please try again."); setSuggestions([]); }
+        if (requestError.name !== "AbortError") { setError(requestError.message || "Destination search is temporarily unavailable. Please try again."); setSuggestions([]); }
       } finally { if (!controller.signal.aborted) setSearching(false); }
     }, 450);
     return () => { window.clearTimeout(timer); controller.abort(); };

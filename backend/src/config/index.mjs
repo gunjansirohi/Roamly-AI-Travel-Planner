@@ -19,6 +19,11 @@ const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_URL || "
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
 
+// Keep the deployed web app allowed even when Railway's optional origin
+// variables have not been populated yet.
+const deployedClientOrigin = "https://travel-planner-six-nu.vercel.app";
+if (!clientOrigins.includes(deployedClientOrigin)) clientOrigins.push(deployedClientOrigin);
+
 const config = Object.freeze({
   // API secrets come only from the host environment.
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",

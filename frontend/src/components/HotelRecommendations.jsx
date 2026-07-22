@@ -13,7 +13,7 @@ import { recordSearch } from "../services/travelDataService";
 const priceLabels = { PRICE_LEVEL_FREE: "Free", PRICE_LEVEL_INEXPENSIVE: "Budget", PRICE_LEVEL_MODERATE: "Moderate", PRICE_LEVEL_EXPENSIVE: "Premium", PRICE_LEVEL_VERY_EXPENSIVE: "Luxury", PRICE_LEVEL_UNSPECIFIED: "Price unavailable" };
 const hotelTypes = ["All types", "Luxury", "Budget", "Business", "Family", "Resort"];
 const markerIcon = (active) => L.divIcon({ className: "hotel-map-pin", html: `<span class="${active ? "active" : ""}">H</span>`, iconSize: [32, 32], iconAnchor: [16, 16] });
-const imageUrl = (photoName) => { if (photoName?.startsWith("destination:")) { const [, city, slot] = photoName.split(":"); return `/api/place-photos/fallback?city=${city}&slot=${slot}`; } return `/api/hotels/photo?name=${encodeURIComponent(photoName)}`; };
+const imageUrl = (photoName) => { if (photoName?.startsWith("destination:")) { const [, city, slot] = photoName.split(":"); return apiUrl(`/api/place-photos/fallback?city=${encodeURIComponent(city)}&slot=${encodeURIComponent(slot)}`); } return apiUrl(`/api/hotels/photo?name=${encodeURIComponent(photoName || "")}`); };
 const priceRank = (price) => ["PRICE_LEVEL_FREE", "PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE", "PRICE_LEVEL_EXPENSIVE", "PRICE_LEVEL_VERY_EXPENSIVE"].indexOf(price);
 
 function HotelMapViewport({ center, selectedHotel }) {
