@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/index.mjs",
-    "dev": "node --watch src/index.mjs"
+    "start": "node src/index.mjs"
+    
   },
   "dependencies": {
     "@google/genai": "^2.11.0",
