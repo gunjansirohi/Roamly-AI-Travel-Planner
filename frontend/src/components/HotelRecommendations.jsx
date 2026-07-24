@@ -43,6 +43,7 @@ export default function HotelRecommendations({ destination, onAddToTrip }) {
         const response = await fetch(apiUrl(`/api/hotels?city=${encodeURIComponent(city)}`), { signal: controller.signal });
         const payload = await response.json().catch(() => null);
         if (!response.ok || !payload?.success) throw new Error(payload?.error?.message || "Unable to load hotel recommendations.");
+        console.log("HOTELS DATA:", payload.hotels);
         if (!Array.isArray(payload.hotels)) throw new Error("The hotel service returned an invalid response.");
         setState({ status: "ready", hotels: payload.hotels.map((hotel, index) => ({ ...hotel, fallbackPhotoSlot: index })), cityCenter: payload.cityCenter, error: "" });
         if (user) void recordSearch(city, "hotel", { results: payload.hotels.length }).catch(() => {});

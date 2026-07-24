@@ -12,7 +12,11 @@ import { databaseReady } from "./services/database.mjs";
 export function createApp() {
   const app = express();
   app.disable("x-powered-by");
-  if (config.trustProxy) app.set("trust proxy", 1);
+  app.set("trust proxy", 1);
+  app.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+}));
   app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
   app.use(compression());
   app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: "draft-8", legacyHeaders: false, message: { success: false, error: { message: "Too many requests. Please try again shortly." } } }));
@@ -40,3 +44,7 @@ export function createApp() {
   app.use(errorHandler);
   return app;
 }
+
+
+
+ 

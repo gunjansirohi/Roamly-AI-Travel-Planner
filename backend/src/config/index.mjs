@@ -35,7 +35,7 @@ const config = Object.freeze({
   geminiModel: process.env.GEMINI_MODEL || "gemini-3.5-flash",
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
   clientOrigins,
-  trustProxy: process.env.TRUST_PROXY === "true",
+  trustProxy: process.env.TRUST_PROXY === "false",
   jwtSecret: process.env.JWT_SECRET || (process.env.NODE_ENV === "production" ? "" : "development-only-change-me"),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "2h",
   rememberMeExpiresIn: process.env.JWT_REMEMBER_EXPIRES_IN || "30d",
