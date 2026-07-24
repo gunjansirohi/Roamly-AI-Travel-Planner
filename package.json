@@ -7,7 +7,7 @@
     "backend"
   ],
   "scripts": {
-    "start": "concurrently --kill-others-on-fail --names API,WEB --prefix-colors green,cyan \"npm run backend\" \"npm run frontend\"",
+    "start": "npm run start --workspace=backend",
     "dev": "npm run dev --workspace=backend",
     "frontend": "npm run start --workspace=frontend",
     "backend": "npm run dev --workspace=backend",
