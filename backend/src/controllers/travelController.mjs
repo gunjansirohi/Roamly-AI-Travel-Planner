@@ -29,8 +29,6 @@ const restaurantCache = new Map();
 const RESTAURANT_CACHE_TTL = 60 * 60 * 1000;
 const restaurantDetailCache = new Map();
 const RESTAURANT_DETAIL_CACHE_TTL = 60 * 60 * 1000;
-const destinationPhotoCache = new Map();
-const DESTINATION_PHOTO_CACHE_TTL = 15 * 60 * 1000;
 const flightCache = new Map();
 const FLIGHT_CACHE_TTL = 30 * 60 * 1000;
 const itineraryCache = new Map();
@@ -144,8 +142,8 @@ app.get("/api/destination-weather", async (request, response) => {
 });
 
 // Hotel helpers keep Google Places data server-side and reduce repeat API usage.
-const GOOGLE_PLACE_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.photos,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary";
-const GOOGLE_DETAIL_FIELDS = "id,displayName,formattedAddress,location,rating,userRatingCount,priceLevel,regularOpeningHours,photos,websiteUri,nationalPhoneNumber,googleMapsUri,types,editorialSummary,reviews,parkingOptions,accessibilityOptions,paymentOptions";
+const GOOGLE_PLACE_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary";
+const GOOGLE_DETAIL_FIELDS = "id,displayName,formattedAddress,location,rating,userRatingCount,priceLevel,regularOpeningHours,websiteUri,nationalPhoneNumber,googleMapsUri,types,editorialSummary,reviews,parkingOptions,accessibilityOptions,paymentOptions";
 
 function haversineDistance(from, to) {
   const radians = (number) => number * Math.PI / 180;
@@ -154,19 +152,6 @@ function haversineDistance(from, to) {
   const deltaLng = radians(to.longitude - from.longitude);
   const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(radians(from.latitude)) * Math.cos(radians(to.latitude)) * Math.sin(deltaLng / 2) ** 2;
   return Math.round(earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
-}
-
-// Pick a different Google Places photo for each place whenever one is available.
-function uniquePhotoName(place, usedPhotoNames) {
-  const names = (place.photos || []).map((photo) => photo?.name).filter(Boolean);
-  const selected = names.find((name) => !usedPhotoNames.has(name)) || names[0] || "";
-  if (selected) usedPhotoNames.add(selected);
-  return selected;
-}
-
-function withUniquePhotos(places, cityCenter, createPublicPlace) {
-  const usedPhotoNames = new Set();
-  return places.map((place) => createPublicPlace(place, cityCenter, uniquePhotoName(place, usedPhotoNames)));
 }
 
 function hotelCategory(place) {
@@ -186,7 +171,7 @@ function hotelCommerce(priceLevel, seed = 0) {
   return { nightlyRate: base + (seed % 5) * 9, currency: "USD", discountPercent: seed % 3 === 0 ? 15 : 0, cancellationPolicy: "Free cancellation until 48 hours before check-in", availability: "Limited availability" };
 }
 
-function publicHotel(place, cityCenter, photoName = place.photos?.[0]?.name || "") {
+function publicHotel(place, cityCenter) {
   const location = place.location || {};
   return {
     id: place.id,
@@ -197,7 +182,6 @@ function publicHotel(place, cityCenter, photoName = place.photos?.[0]?.name || "
     reviewCount: Number(place.userRatingCount) || 0,
     priceLevel: place.priceLevel || "PRICE_LEVEL_UNSPECIFIED",
     openNow: place.regularOpeningHours?.openNow ?? null,
-    photoName,
     category: hotelCategory(place),
     distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null,
     mapsUrl: place.googleMapsUri || "",
@@ -264,7 +248,6 @@ async function fetchMockHotels(city, requestId) {
       reviewCount: template.reviewCount,
       priceLevel: template.priceLevel,
       openNow: true,
-      photoName: `destination:${encodeURIComponent(city)}:${idx}`,
       category: template.category,
       distanceKm: Math.round(haversineDistance(cityCenter, { latitude: hotelLat, longitude: hotelLng }) * 10) / 10,
       mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(normalizedCity + " " + template.name)}`,
@@ -310,7 +293,7 @@ app.get("/api/hotels", async (request, response) => {
       console.info(`[${requestId}] Google Places hotel response`, { city, status: placesResponse.status, count: places?.places?.length || 0, body: places });
       if (!placesResponse.ok) throw Object.assign(new Error("Hotel search failed"), { status: placesResponse.status, body: places });
       
-      const hotels = withUniquePhotos(places?.places || [], cityCenter, publicHotel).filter((hotel) => hotel.id && Number.isFinite(hotel.coordinates.latitude)).map((hotel, index) => ({ ...hotel, photoName: hotel.photoName || `destination:${encodeURIComponent(city)}:${index}` }));
+      const hotels = (places?.places || []).map((place) => publicHotel(place, cityCenter)).filter((hotel) => hotel.id && Number.isFinite(hotel.coordinates.latitude));
       hotelCache.set(cacheKey, { hotels, cityCenter, savedAt: Date.now() });
       return response.json({ success: true, hotels, cityCenter, cached: false });
     } catch (error) {
@@ -361,7 +344,6 @@ app.get("/api/hotels/:placeId", async (request, response) => {
         reviewCount: template.reviewCount,
         priceLevel: template.priceLevel,
         openNow: true,
-        photoName: "",
         category: template.category,
         distanceKm: 1.5,
         mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(capitalizedCity + " " + template.name)}`,
@@ -412,7 +394,6 @@ app.get("/api/hotels/:placeId", async (request, response) => {
       reviewCount: 150,
       priceLevel: "PRICE_LEVEL_MODERATE",
       openNow: null,
-      photoName: "",
       category: "Family",
       distanceKm: null,
       mapsUrl: "",
@@ -428,86 +409,9 @@ app.get("/api/hotels/:placeId", async (request, response) => {
   });
 });
 
-// Proxy Place Photos so the server-only Google key is never exposed in an image URL.
-app.get("/api/hotels/photo", async (request, response) => {
-  const photoName = typeof request.query.name === "string" ? request.query.name : "";
-  if (!/^places\/[A-Za-z0-9_-]+\/photos\/[A-Za-z0-9_-]+$/.test(photoName)) return sendError(response, 400, "Invalid hotel photo.");
-  if (!googleMapsConfigured) return sendError(response, 503, "Hotel photos are not configured.");
-  try {
-    const path = photoName.split("/").map(encodeURIComponent).join("/");
-    const photoResponse = await fetch(`https://places.googleapis.com/v1/${path}/media?maxHeightPx=640`, { headers: { "X-Goog-Api-Key": googleMapsApiKey } });
-    if (!photoResponse.ok) throw Object.assign(new Error("Photo failed"), { status: photoResponse.status });
-    response.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
-    response.type(photoResponse.headers.get("content-type") || "image/jpeg");
-    return response.send(Buffer.from(await photoResponse.arrayBuffer()));
-  } catch (error) {
-    const failure = hotelProviderFailure(error);
-    return sendError(response, failure.status, failure.message);
-  }
-});
-
-// Place photos are destination-specific. This route is used only if a returned
-// place has no photo of its own, and rotates through unique local landmarks.
-async function sendWikimediaDestinationPhoto(response, city, slot) {
-  const cacheKey = `wikimedia:${city.toLowerCase()}`;
-  let entry = destinationPhotoCache.get(cacheKey);
-  if (!entry || Date.now() - entry.savedAt >= DESTINATION_PHOTO_CACHE_TTL) {
-    const search = new URLSearchParams({ action: "query", generator: "search", gsrsearch: `${city} landmark`, gsrnamespace: "6", gsrlimit: "20", prop: "imageinfo", iiprop: "url", iiurlwidth: "1200", format: "json", origin: "*" });
-    const result = await fetch(`https://commons.wikimedia.org/w/api.php?${search}`);
-    const payload = await result.json().catch(() => null);
-    const sources = Object.values(payload?.query?.pages || {}).map((page) => page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url).filter(Boolean);
-    entry = { names: [...new Set(sources)], savedAt: Date.now() };
-    destinationPhotoCache.set(cacheKey, entry);
-  }
-  const imageUrl = entry.names[slot % entry.names.length];
-  if (!imageUrl) throw new Error("No destination image found");
-  const imageResponse = await fetch(imageUrl);
-  if (!imageResponse.ok) throw new Error("Destination image download failed");
-  response.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
-  response.type(imageResponse.headers.get("content-type") || "image/jpeg");
-  return response.send(Buffer.from(await imageResponse.arrayBuffer()));
-}
-
-app.get("/api/place-photos/fallback", async (request, response) => {
-  const city = typeof request.query.city === "string" ? request.query.city.trim() : "";
-  const slot = Math.max(0, Math.min(Number.parseInt(request.query.slot, 10) || 0, 99));
-  if (!city || city.length > 120) return sendError(response, 400, "Enter a valid destination for a fallback photo.");
-  if (!googleMapsConfigured) {
-    try { return await sendWikimediaDestinationPhoto(response, city, slot); }
-    catch { return sendError(response, 502, "A destination photo is temporarily unavailable."); }
-  }
-
-  try {
-    const cacheKey = city.toLowerCase();
-    let entry = destinationPhotoCache.get(cacheKey);
-    if (!entry || Date.now() - entry.savedAt >= DESTINATION_PHOTO_CACHE_TTL) {
-      const placesResponse = await fetch("https://places.googleapis.com/v1/places:searchText", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Goog-Api-Key": googleMapsApiKey, "X-Goog-FieldMask": "places.photos" },
-        body: JSON.stringify({ textQuery: `landmarks and attractions in ${city}`, maxResultCount: 20, languageCode: "en" }),
-      });
-      const places = await placesResponse.json().catch(() => null);
-      if (!placesResponse.ok) throw Object.assign(new Error("Destination photo search failed"), { status: placesResponse.status });
-      entry = { names: [...new Set((places?.places || []).flatMap((place) => (place.photos || []).map((photo) => photo?.name).filter(Boolean)))], savedAt: Date.now() };
-      destinationPhotoCache.set(cacheKey, entry);
-    }
-    const photoName = entry.names[slot % entry.names.length];
-    if (!photoName) return sendWikimediaDestinationPhoto(response, city, slot);
-    const path = photoName.split("/").map(encodeURIComponent).join("/");
-    const photoResponse = await fetch(`https://places.googleapis.com/v1/${path}/media?maxHeightPx=900`, { headers: { "X-Goog-Api-Key": googleMapsApiKey } });
-    if (!photoResponse.ok) throw Object.assign(new Error("Destination photo failed"), { status: photoResponse.status });
-    response.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
-    response.type(photoResponse.headers.get("content-type") || "image/jpeg");
-    return response.send(Buffer.from(await photoResponse.arrayBuffer()));
-  } catch (error) {
-    try { return await sendWikimediaDestinationPhoto(response, city, slot); }
-    catch { return sendError(response, hotelProviderFailure(error).status, "A destination photo is temporarily unavailable."); }
-  }
-});
-
 // Restaurant recommendations intentionally use their own routes and cache so
 // this feature stays independent from the existing hotel implementation.
-const RESTAURANT_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.photos,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary";
+const RESTAURANT_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary";
 const RESTAURANT_DETAIL_FIELDS = `${RESTAURANT_FIELDS},reviews,parkingOptions,accessibilityOptions,outdoorSeating,servesVegetarianFood,goodForChildren`;
 const GOOGLE_GEOCODE_ENDPOINT = "https://maps.googleapis.com/maps/api/geocode/json";
 const GOOGLE_TEXT_SEARCH_ENDPOINT = "https://places.googleapis.com/v1/places:searchText";
@@ -561,7 +465,7 @@ function restaurantCategories(place) {
   if (/restaurant|meal_takeaway|meal_delivery|barbecue|pizza|sushi|indian|chinese|italian/.test(text)) categories.push("Restaurant");
   return [...new Set(categories)].length ? [...new Set(categories)] : ["Restaurant"];
 }
-function publicRestaurant(place, cityCenter, photoName = place.photos?.[0]?.name || "") { const location = place.location || {}; const categories = restaurantCategories(place); return { id: place.id, name: place.displayName?.text || "Place", address: place.formattedAddress || "Address unavailable", coordinates: { latitude: location.latitude, longitude: location.longitude }, rating: Number(place.rating) || 0, reviewCount: Number(place.userRatingCount) || 0, priceLevel: place.priceLevel || "PRICE_LEVEL_UNSPECIFIED", openNow: place.regularOpeningHours?.openNow ?? null, photoName, category: categories[0], categories, distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null, mapsUrl: place.googleMapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName?.text || "place")}`, website: place.websiteUri || "", phone: place.nationalPhoneNumber || "" }; }
+function publicRestaurant(place, cityCenter) { const location = place.location || {}; const categories = restaurantCategories(place); return { id: place.id, name: place.displayName?.text || "Place", address: place.formattedAddress || "Address unavailable", coordinates: { latitude: location.latitude, longitude: location.longitude }, rating: Number(place.rating) || 0, reviewCount: Number(place.userRatingCount) || 0, priceLevel: place.priceLevel || "PRICE_LEVEL_UNSPECIFIED", openNow: place.regularOpeningHours?.openNow ?? null, category: categories[0], categories, distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null, mapsUrl: place.googleMapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName?.text || "place")}`, website: place.websiteUri || "", phone: place.nationalPhoneNumber || "" }; }
 
 app.get("/api/restaurants", async (request, response) => {
   const requestId = createRequestId(); const city = typeof request.query.city === "string" ? request.query.city.trim() : "";
@@ -584,7 +488,7 @@ app.get("/api/restaurants", async (request, response) => {
       return payload?.places || [];
     }));
     const seen = new Set(); const places = responses.flat().filter((place) => place.id && !seen.has(place.id) && seen.add(place.id));
-    const restaurants = withUniquePhotos(places, cityCenter, publicRestaurant).filter((item) => item.id).slice(0, 30);
+    const restaurants = places.map((place) => publicRestaurant(place, cityCenter)).filter((item) => item.id).slice(0, 30);
     const data = { restaurants, cityCenter, savedAt: Date.now() }; restaurantCache.set(cacheKey, data); return response.json({ success: true, restaurants, cityCenter, cached: false });
   } catch (error) { console.error(`[${requestId}] Restaurant provider failed; using local dataset.`, { city, status: error?.status, message: error?.message }); const restaurants = (await localData("restaurants")).map((item) => ({ ...item, mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.name} ${city}`)}`, website: "", phone: "", coordinates: { latitude: 0, longitude: 0 } })); const data = { restaurants, cityCenter: null, savedAt: Date.now() }; restaurantCache.set(cacheKey, data); return response.json({ success: true, ...data, fallback: true, message: "Live restaurant information is temporarily unavailable." }); }
 });
@@ -596,8 +500,6 @@ app.get("/api/restaurants/:placeId", async (request, response) => {
   if (placeId.startsWith("mock-restaurant-")) return response.json({ success: true, details: { description: "A popular local dining choice selected for its strong guest ratings and convenient city-centre location.", openingHours: ["Monday: 11:00 AM – 10:30 PM", "Tuesday: 11:00 AM – 10:30 PM", "Wednesday: 11:00 AM – 10:30 PM", "Thursday: 11:00 AM – 10:30 PM", "Friday: 11:00 AM – 11:00 PM", "Saturday: 11:00 AM – 11:00 PM", "Sunday: 11:00 AM – 10:30 PM"], amenities: ["Wi-Fi", "Parking", "Outdoor seating", "Takeaway"], reviews: [{ authorAttribution: { displayName: "Local diner" }, rating: 5, text: { text: "Wonderful food, warm service, and a great location." } }, { authorAttribution: { displayName: "Travel guest" }, rating: 4, text: { text: "A reliable choice for an enjoyable meal." } }] } });
   try { const result = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=en`, { headers: { "X-Goog-Api-Key": googleMapsApiKey, "X-Goog-FieldMask": RESTAURANT_DETAIL_FIELDS } }); const place = await result.json().catch(() => null); if (!result.ok) throw new Error("Restaurant details failed"); const amenities = [place.outdoorSeating ? "Outdoor seating" : "", place.servesVegetarianFood ? "Vegetarian options" : "", place.goodForChildren ? "Good for children" : "", place.parkingOptions?.freeParking ? "Free parking" : "", place.accessibilityOptions?.wheelchairAccessibleEntrance ? "Accessible entrance" : ""].filter(Boolean); const details = { description: place.editorialSummary?.text || "No restaurant description is available.", openingHours: place.regularOpeningHours?.weekdayDescriptions || [], amenities, reviews: place.reviews || [] }; restaurantDetailCache.set(placeId, { details, savedAt: Date.now() }); return response.json({ success: true, details }); } catch { return response.json({ success: true, details: { description: "Detailed information is temporarily unavailable.", openingHours: [], amenities: [], reviews: [] } }); }
 });
-
-app.get("/api/restaurants/photo", async (request, response) => { const photoName = typeof request.query.name === "string" ? request.query.name : ""; if (!/^places\/[A-Za-z0-9_-]+\/photos\/[A-Za-z0-9_-]+$/.test(photoName)) return sendError(response, 400, "Invalid restaurant photo."); try { const path = photoName.split("/").map(encodeURIComponent).join("/"); const result = await fetch(`https://places.googleapis.com/v1/${path}/media?maxHeightPx=640`, { headers: { "X-Goog-Api-Key": googleMapsApiKey } }); if (!result.ok) throw new Error("Photo failed"); response.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800"); response.type(result.headers.get("content-type") || "image/jpeg"); return response.send(Buffer.from(await result.arrayBuffer())); } catch { return sendError(response, 502, "Restaurant photo is temporarily unavailable."); } });
 
 app.get("/api/flights", async (request, response) => {
   const departure = typeof request.query.departure === "string" ? request.query.departure.trim() : "";

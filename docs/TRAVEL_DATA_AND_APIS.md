@@ -3,7 +3,7 @@
 ## Providers
 
 - **Gemini** generates Markdown itineraries on the Express server.
-- **Google Places API (New)** supplies live hotel and restaurant search, details, photos, ratings, hours, contact information, coordinates, websites, and Maps links.
+- **Google Places API (New)** supplies live hotel and restaurant search, ratings, price levels, contact information, coordinates, websites, and Maps links. Hotel and restaurant photos are intentionally not requested or exposed.
 - **OpenWeather** supplies destination weather snapshots.
 - **Amadeus Self-Service Flight Offers** supplies live flight offers, segments, prices, cabin and baggage data. When credentials are absent or the provider is unavailable, Roamly labels cached/demo results explicitly.
 - Provider credentials are server-only. React never receives API secrets.
@@ -31,7 +31,7 @@ Authentication endpoints live under `/api/auth`. Travel data endpoints require t
 - `POST /api/search-history`
 - `GET /api/dashboard`
 
-Public discovery endpoints remain available for guests: `/api/hotels`, `/api/restaurants`, `/api/flights`, `/api/weather`, destination search, place details and image proxy routes. `/api/ai-trip` requires login and automatically creates a `Trips` record.
+Public discovery endpoints remain available for guests: `/api/hotels`, `/api/restaurants`, `/api/flights`, `/api/weather`, destination search and place details. `/api/ai-trip` requires login and automatically creates a `Trips` record.
 
 ## Environment variables
 
