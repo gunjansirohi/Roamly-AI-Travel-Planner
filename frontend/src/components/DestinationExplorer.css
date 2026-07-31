@@ -9,3 +9,49 @@
 .leaflet-custom-controls button:last-child { border-bottom: 0; font-size: 17px; }.leaflet-custom-controls button:hover { background: #d6fb72; }
 @keyframes marker-pop { from { opacity: 0; transform: translateY(-22px) rotate(-45deg) scale(.65); } to { opacity: 1; transform: translateY(0) rotate(-45deg) scale(1); } }
 @keyframes marker-pulse { 50% { box-shadow: 0 6px 18px rgba(17,44,39,.35), 0 0 0 8px rgba(214,251,114,.22); } }
+
+/* Dark palette is intentionally scoped to the destination/map section. */
+html[data-theme="dark"] #smart-search {
+  background: radial-gradient(circle at 14% 0, rgba(48, 111, 91, .22), transparent 34%), linear-gradient(155deg, #081b18 0%, #0b211d 52%, #0d2520 100%);
+}
+html[data-theme="dark"] #smart-search > div > div:first-child > p:first-child { color: #9fcf8d; }
+html[data-theme="dark"] #smart-search > div > div:first-child h2 { color: #f2f7f3; }
+html[data-theme="dark"] #smart-search > div > div:first-child h2 span { color: #acd990; }
+html[data-theme="dark"] #smart-search > div > div:first-child h2 + p { color: #b7c7bf; }
+html[data-theme="dark"] #smart-search > div > div:nth-child(2) {
+  border-color: rgba(158, 196, 179, .2);
+  background: #132e28;
+  box-shadow: 0 28px 70px rgba(0, 8, 7, .42), 0 0 0 1px rgba(188, 221, 205, .035);
+}
+html[data-theme="dark"] #smart-search > div > div:nth-child(2) > div.grid > div:first-child { background: #102823; }
+html[data-theme="dark"] #smart-search .leaflet-container {
+  background: #102823;
+  border-right: 1px solid rgba(158, 196, 179, .15);
+}
+html[data-theme="dark"] #smart-search .leaflet-tile-pane { filter: brightness(.78) saturate(.72) contrast(1.08) hue-rotate(8deg); }
+html[data-theme="dark"] #smart-search input[aria-label="Search destinations"] { color: #eef6f1; caret-color: #b9e58c; }
+html[data-theme="dark"] #smart-search input[aria-label="Search destinations"]::placeholder { color: #91a79d; }
+html[data-theme="dark"] #smart-search input[aria-label="Search destinations"]:focus { color: #fff; }
+html[data-theme="dark"] #smart-search input[aria-label="Search destinations"]:focus-visible { outline: none; }
+html[data-theme="dark"] #smart-search div:has(> input[aria-label="Search destinations"]) { color: #acd990; }
+html[data-theme="dark"] #smart-search div:has(> div > input[aria-label="Search destinations"]) {
+  border-color: rgba(170, 215, 193, .25);
+  background: rgba(17, 45, 38, .94);
+  box-shadow: 0 14px 34px rgba(0, 12, 10, .38), inset 0 1px rgba(255, 255, 255, .035);
+}
+html[data-theme="dark"] #smart-search ul:has(button) { border-color: rgba(170, 215, 193, .16); }
+html[data-theme="dark"] #smart-search ul:has(button) button { color: #dce9e2; }
+html[data-theme="dark"] #smart-search ul:has(button) button:hover { background: #23483d; }
+html[data-theme="dark"] #smart-search ul:has(button) button span { color: #a9d58e; }
+html[data-theme="dark"] #smart-search aside { background: #16342d; color: #f4f8f5; }
+html[data-theme="dark"] #smart-search aside > div > p:not(:first-child),
+html[data-theme="dark"] #smart-search aside > p:last-child { color: #b7c8c0; }
+html[data-theme="dark"] #smart-search aside > div > p:first-child,
+html[data-theme="dark"] #smart-search aside > p:nth-child(2) { color: #b9e58c; }
+html[data-theme="dark"] #smart-search aside h3 { color: #f7faf8; }
+html[data-theme="dark"] #smart-search aside .grid > div { background: rgba(228, 244, 235, .075); border: 1px solid rgba(180, 213, 197, .1); }
+html[data-theme="dark"] #smart-search aside button { background: #b9e58c; color: #102c26; box-shadow: 0 10px 25px rgba(5, 18, 15, .24); }
+html[data-theme="dark"] #smart-search aside button:hover { background: #d8f5b4; }
+html[data-theme="dark"] #smart-search .leaflet-custom-controls { border-color: rgba(176, 210, 194, .25); box-shadow: 0 10px 28px rgba(0, 10, 8, .38); }
+html[data-theme="dark"] #smart-search .leaflet-custom-controls button { background: rgba(18, 47, 40, .96); border-color: rgba(176, 210, 194, .16); color: #e9f4ee; }
+html[data-theme="dark"] #smart-search .leaflet-custom-controls button:hover { background: #b9e58c; color: #102c26; }
