@@ -6,6 +6,7 @@ import { localData } from "../services/localData.mjs";
 import { fetchWithRetry, retryOnce } from "../services/providerRequest.mjs";
 import { requireAuth } from "../middleware/auth.mjs";
 import { Trip } from "../models/TravelData.mjs";
+import { hotelWebsiteUrl } from "../utils/hotelWebsite.mjs";
 
 const fetch = fetchWithRetry;
 
@@ -173,9 +174,11 @@ function hotelCommerce(priceLevel, seed = 0) {
 
 function publicHotel(place, cityCenter) {
   const location = place.location || {};
+  const name = place.displayName?.text || "Hotel";
+  const city = cityCenter?.name || place.formattedAddress || "";
   return {
     id: place.id,
-    name: place.displayName?.text || "Hotel",
+    name,
     address: place.formattedAddress || "Address unavailable",
     coordinates: { latitude: location.latitude, longitude: location.longitude },
     rating: Number(place.rating) || 0,
@@ -185,7 +188,7 @@ function publicHotel(place, cityCenter) {
     category: hotelCategory(place),
     distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null,
     mapsUrl: place.googleMapsUri || "",
-    website: place.websiteUri || "",
+    website: hotelWebsiteUrl(place.websiteUri, name, city),
     phone: place.nationalPhoneNumber || "",
     ...hotelCommerce(place.priceLevel, Number(place.userRatingCount) || 0),
   };
@@ -251,7 +254,7 @@ async function fetchMockHotels(city, requestId) {
       category: template.category,
       distanceKm: Math.round(haversineDistance(cityCenter, { latitude: hotelLat, longitude: hotelLng }) * 10) / 10,
       mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(normalizedCity + " " + template.name)}`,
-      website: "https://example.com/hotel",
+      website: hotelWebsiteUrl("", `${normalizedCity} ${template.name}`, normalizedCity),
       phone: "+1 555-0199",
       ...hotelCommerce(template.priceLevel, idx)
     };
@@ -347,7 +350,7 @@ app.get("/api/hotels/:placeId", async (request, response) => {
         category: template.category,
         distanceKm: 1.5,
         mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(capitalizedCity + " " + template.name)}`,
-        website: "https://example.com/hotel",
+        website: hotelWebsiteUrl("", `${capitalizedCity} ${template.name}`, capitalizedCity),
         phone: "+1 555-0199"
       },
       details: {

@@ -33,7 +33,7 @@ Configure the backend with your deployment platform's environment-variable setti
 | Variable | Purpose |
 | --- | --- |
 | `PORT` | API listening port; defaults to `5000`. |
-| `CLIENT_ORIGINS` | Comma-separated public frontend origins, for example `https://app.example.com`. |
+| `CLIENT_ORIGINS` | Comma-separated public frontend origins for your deployed application. |
 | `TRUST_PROXY` | Set to `true` behind a reverse proxy or load balancer. |
 | `GEMINI_API_KEY` | Enables itinerary generation. |
 | `GEMINI_MODEL` | Optional Gemini model override. |
@@ -47,7 +47,7 @@ Configure the backend with your deployment platform's environment-variable setti
 Build the frontend with the public API origin. This value is compiled into the browser bundle, so it must not contain a secret:
 
 ```powershell
-$env:VITE_API_URL = "https://api.example.com"
+$env:VITE_API_URL = $env:ROAMLY_API_ORIGIN
 npm run build
 ```
 
