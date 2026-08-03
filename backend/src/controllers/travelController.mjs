@@ -143,7 +143,7 @@ app.get("/api/destination-weather", async (request, response) => {
 });
 
 // Hotel helpers keep Google Places data server-side and reduce repeat API usage.
-const GOOGLE_PLACE_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary";
+const GOOGLE_PLACE_FIELDS = "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.regularOpeningHours,places.websiteUri,places.nationalPhoneNumber,places.googleMapsUri,places.types,places.editorialSummary,places.photos";
 const GOOGLE_DETAIL_FIELDS = "id,displayName,formattedAddress,location,rating,userRatingCount,priceLevel,regularOpeningHours,websiteUri,nationalPhoneNumber,googleMapsUri,types,editorialSummary,reviews,parkingOptions,accessibilityOptions,paymentOptions";
 
 function haversineDistance(from, to) {
@@ -172,10 +172,22 @@ function hotelCommerce(priceLevel, seed = 0) {
   return { nightlyRate: base + (seed % 5) * 9, currency: "USD", discountPercent: seed % 3 === 0 ? 15 : 0, cancellationPolicy: "Free cancellation until 48 hours before check-in", availability: "Limited availability" };
 }
 
+function hotelAmenities(place, category) {
+  const types = place.types || [];
+  const amenities = ["WiFi", "Air conditioning"];
+  if (category === "Luxury" || category === "Resort") amenities.push("Pool", "Breakfast", "Parking");
+  else if (category === "Family") amenities.push("Breakfast", "Parking");
+  else if (category === "Business") amenities.push("Breakfast", "Parking");
+  else amenities.push("Breakfast");
+  if (types.includes("spa")) amenities.push("Spa");
+  return [...new Set(amenities)];
+}
+
 function publicHotel(place, cityCenter) {
   const location = place.location || {};
   const name = place.displayName?.text || "Hotel";
   const city = cityCenter?.name || place.formattedAddress || "";
+  const category = hotelCategory(place);
   return {
     id: place.id,
     name,
@@ -185,7 +197,9 @@ function publicHotel(place, cityCenter) {
     reviewCount: Number(place.userRatingCount) || 0,
     priceLevel: place.priceLevel || "PRICE_LEVEL_UNSPECIFIED",
     openNow: place.regularOpeningHours?.openNow ?? null,
-    category: hotelCategory(place),
+    category,
+    photoName: place.photos?.[0]?.name || "",
+    amenities: hotelAmenities(place, category),
     distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null,
     mapsUrl: place.googleMapsUri || "",
     website: hotelWebsiteUrl(place.websiteUri, name, city),
@@ -193,6 +207,19 @@ function publicHotel(place, cityCenter) {
     ...hotelCommerce(place.priceLevel, Number(place.userRatingCount) || 0),
   };
 }
+
+// Proxies Places photos so the Google key never reaches the browser.
+app.get("/api/place-photo", async (request, response) => {
+  const photoName = typeof request.query.name === "string" ? request.query.name : "";
+  if (!googleMapsConfigured || !/^places\/[A-Za-z0-9_-]+\/photos\/[A-Za-z0-9_-]+$/.test(photoName)) return response.status(404).end();
+  try {
+    const photoResponse = await fetch(`https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=1000&maxHeightPx=700&skipHttpRedirect=true`, { headers: { "X-Goog-Api-Key": googleMapsApiKey } });
+    const payload = await photoResponse.json().catch(() => null);
+    if (!photoResponse.ok || !payload?.photoUri) return response.status(404).end();
+    response.set("Cache-Control", "public, max-age=86400");
+    return response.redirect(302, payload.photoUri);
+  } catch { return response.status(404).end(); }
+});
 
 function hotelProviderFailure(error) {
   const status = Number(error?.status);
@@ -252,6 +279,9 @@ async function fetchMockHotels(city, requestId) {
       priceLevel: template.priceLevel,
       openNow: true,
       category: template.category,
+      photoName: "",
+      image: template.image || "",
+      amenities: template.amenities || hotelAmenities({}, template.category),
       distanceKm: Math.round(haversineDistance(cityCenter, { latitude: hotelLat, longitude: hotelLng }) * 10) / 10,
       mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(normalizedCity + " " + template.name)}`,
       website: hotelWebsiteUrl("", `${normalizedCity} ${template.name}`, normalizedCity),

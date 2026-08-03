@@ -1,0 +1,25 @@
+/* Scoped dark-mode corrections for the AI request form; light mode remains unchanged. */
+html[data-theme="dark"] .ai-planner-page{background:radial-gradient(circle at 50% 8%,rgba(78,118,91,.16),transparent 30%),#0c211e!important;color:#edf5ef!important}
+html[data-theme="dark"] .ai-planner-page form{border-color:rgba(170,207,189,.22)!important;background:linear-gradient(145deg,rgba(25,55,48,.96),rgba(17,43,37,.94))!important;color:#f3f8f5!important;box-shadow:0 28px 70px rgba(0,8,7,.42),inset 0 1px 0 rgba(255,255,255,.055)!important;backdrop-filter:blur(22px)}
+html[data-theme="dark"] .ai-planner-page form label{color:#f0f7f3!important;font-weight:750!important;letter-spacing:.012em;text-shadow:0 1px 1px rgba(0,0,0,.12)}
+html[data-theme="dark"] .ai-planner-page form>label:first-child{display:inline-block;margin-bottom:.15rem;color:#f6faf8!important;font-family:'Playfair Display',Georgia,serif;font-size:1rem!important;font-weight:700!important;letter-spacing:-.01em}
+html[data-theme="dark"] .ai-planner-page form input,html[data-theme="dark"] .ai-planner-page form textarea,html[data-theme="dark"] .ai-planner-page form select{border:1px solid #527168!important;background:#102c26!important;color:#f4f8f6!important;caret-color:#d6fb72;box-shadow:inset 0 1px 0 rgba(255,255,255,.035);transition:border-color .2s ease,background .2s ease,box-shadow .2s ease,transform .2s ease}
+html[data-theme="dark"] .ai-planner-page form textarea{border-radius:1rem!important;background:#0f2924!important}
+html[data-theme="dark"] .ai-planner-page form input:hover,html[data-theme="dark"] .ai-planner-page form textarea:hover,html[data-theme="dark"] .ai-planner-page form select:hover{border-color:#719386!important;background:#14342d!important}
+html[data-theme="dark"] .ai-planner-page form input:focus,html[data-theme="dark"] .ai-planner-page form textarea:focus,html[data-theme="dark"] .ai-planner-page form select:focus{border-color:#b9e58c!important;background:#163a32!important;outline:none!important;box-shadow:0 0 0 3px rgba(185,229,140,.17),0 8px 20px rgba(0,8,7,.2)!important}
+html[data-theme="dark"] .ai-planner-page form input::placeholder,html[data-theme="dark"] .ai-planner-page form textarea::placeholder{color:#9fb2a8!important;opacity:1}
+html[data-theme="dark"] .ai-planner-page form select option{background:#102c26;color:#f4f8f6}
+html[data-theme="dark"] .ai-planner-page form .currency-amount span{color:#c5d5cc!important}
+html[data-theme="dark"] .ai-planner-page form>div:last-child>span{color:#b4c5bc!important}
+html[data-theme="dark"] .ai-planner-page form button[type="submit"]{border:1px solid #d6fb72!important;background:linear-gradient(135deg,#d6fb72,#b8e765)!important;color:#153a34!important;font-weight:850!important;box-shadow:0 10px 24px rgba(0,8,7,.35),0 0 0 1px rgba(214,251,114,.08);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
+html[data-theme="dark"] .ai-planner-page form button[type="submit"]:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 15px 30px rgba(0,8,7,.45),0 0 0 4px rgba(214,251,114,.1)}
+html[data-theme="dark"] .ai-planner-page form button[type="submit"]:active:not(:disabled){transform:translateY(0) scale(.98);box-shadow:0 6px 14px rgba(0,8,7,.34)}
+html[data-theme="dark"] .ai-planner-page form button[type="submit"]:focus-visible{outline:3px solid #f1ffcb;outline-offset:3px}
+html[data-theme="dark"] .ai-planner-page form button[type="submit"]:disabled{color:#25443a!important;opacity:.62}
+@media(max-width:640px){html[data-theme="dark"] .ai-planner-page form{padding:1.15rem!important;border-radius:1.25rem!important}html[data-theme="dark"] .ai-planner-page form>label:first-child{font-size:.95rem!important}html[data-theme="dark"] .ai-planner-page form button[type="submit"]{width:100%}}
+/* Keep the Budget currency suffix contained within its grid field. */
+.ai-planner-page form .currency-amount{position:relative;width:100%;min-width:0;overflow:hidden;border-radius:.75rem}
+.ai-planner-page form .currency-amount input{display:block;box-sizing:border-box;width:100%;min-width:0;height:2.625rem;padding-right:5.65rem!important}
+.ai-planner-page form .currency-amount>span{position:absolute;top:50%;right:.42rem;display:inline-flex;max-width:4.75rem;align-items:center;justify-content:center;overflow:hidden;border:1px solid #d5e0d1;border-radius:.55rem;background:#edf4e9;padding:.3rem .48rem;color:#315344;font-size:.65rem;font-weight:800;line-height:1;letter-spacing:.02em;text-overflow:ellipsis;white-space:nowrap;transform:translateY(-50%);pointer-events:none}
+html[data-theme="dark"] .ai-planner-page form .currency-amount>span{border-color:#4c6c61;background:#25483f;color:#d9efc0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+@media(max-width:640px){.ai-planner-page form .currency-amount input{padding-right:5.35rem!important}.ai-planner-page form .currency-amount>span{right:.38rem;padding-right:.42rem;padding-left:.42rem}}

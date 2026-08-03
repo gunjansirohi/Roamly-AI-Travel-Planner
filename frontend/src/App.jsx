@@ -107,8 +107,10 @@ function Home() {
               <button key={id} onClick={() => id === "favorites" ? openLibrary(id) : id === "ai-planner" ? openAiTripPlanner() : scrollTo(id)}>{label}</button>
             ))}
           </div>
-          <button className="theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>{theme === "dark" ? "☀" : "☾"}</button>
-          <div className="auth-nav">{user ? <button className="avatar-button" aria-label="Open account menu">{user.profilePicture ? <img src={user.profilePicture} alt="" /> : user.fullName?.slice(0, 1).toUpperCase()}<span className="account-dropdown"><button onClick={() => navigate("/profile")}>My Profile</button><button onClick={() => navigate("/saved-trips")}>Saved Trips</button><button onClick={() => navigate("/favorites")}>Favorites</button><button onClick={() => navigate("/settings")}>Settings</button><button onClick={logout}>Logout</button></span></button> : <><button onClick={() => navigate("/login")}>Login</button><button className="signup-nav" onClick={() => navigate("/signup")}>Sign Up</button></>}</div>
+          <div className="nav-actions flex shrink-0 items-center gap-3 sm:gap-4">
+            <button className="theme-toggle !static" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>{theme === "dark" ? "☀" : "☾"}</button>
+            <div className="auth-nav !ml-0">{user ? <button className="avatar-button" aria-label="Open account menu">{user.profilePicture ? <img src={user.profilePicture} alt="" /> : user.fullName?.slice(0, 1).toUpperCase()}<span className="account-dropdown"><button onClick={() => navigate("/profile")}>My Profile</button><button onClick={() => navigate("/saved-trips")}>Saved Trips</button><button onClick={() => navigate("/favorites")}>Favorites</button><button onClick={() => navigate("/settings")}>Settings</button><button onClick={logout}>Logout</button></span></button> : <><button onClick={() => navigate("/login")}>Login</button><button className="signup-nav" onClick={() => navigate("/signup")}>Sign Up</button></>}</div>
+          </div>
         </nav>
         <div className="floating-icon icon-plane">✈</div><div className="floating-icon icon-pin">⌖</div><div className="floating-icon icon-palm">♧</div>
         <motion.div className="hero-content" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.13 } } }}>

@@ -9,6 +9,7 @@ import { useCurrency } from "../context/CurrencyContext";
 import { useTrips } from "../context/TripsContext";
 import { useTheme } from "../context/ThemeContext";
 import { favoriteTrip } from "../services/travelDataService";
+import "./AITripPlannerPage.css";
 
 const travelStyles = ["Cultural", "Adventure", "Relaxation", "Beach", "City Break", "Road Trip", "Wildlife Safari", "Ski"];
 const examples = ["Plan a 5-day trip to Goa", "Weekend trip to Jaipur", "Solo trip to Manali"];
@@ -74,7 +75,7 @@ export default function AITripPlannerPage({ onBack, initialTrip = {} }) {
     window.open(links[service], "_blank", "noopener,noreferrer"); setNotice(`Opening ${service} sharing.`);
   };
 
-  return <main className="min-h-screen bg-[#f5f2eb] text-[#15201d]">
+  return <main className="ai-planner-page min-h-screen bg-[#f5f2eb] text-[#15201d]">
     <header className="flex items-center justify-between gap-3 border-b border-[#d9e3d4] bg-[#153a34] px-5 py-5 text-white sm:px-10 lg:px-20"><button onClick={onBack} className="back-to-roamly text-sm font-semibold" aria-label="Back to Roamly">Back to Roamly</button><span className="text-lg font-bold">Roamly AI</span><div className="flex items-center gap-2"><button onClick={toggleTheme} className="planner-theme-toggle" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>{theme === "dark" ? "☀" : "☾"}</button></div></header>
     <section className="mx-auto max-w-6xl px-5 py-12 sm:px-10 lg:py-16">
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl text-center"><p className="text-xs font-bold tracking-[.2em] text-[#5b7f60]">GEMINI-POWERED TRIP PLANNER</p><h1 className="mt-4 font-['Playfair_Display'] text-4xl font-semibold tracking-tight sm:text-6xl">Your next trip, <span className="italic text-[#5d825f]">thoughtfully planned.</span></h1></motion.div>

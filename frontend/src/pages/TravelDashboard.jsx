@@ -1,23 +1,54 @@
 import { useCallback, useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
+import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { deleteTrip, duplicateTrip, favoriteTrip, getDashboard, listTrips, updateTrip } from "../services/travelDataService";
+import { deleteSearch, deleteTrip, duplicateTrip, favoriteTrip, getDashboard, listTrips, updateTrip } from "../services/travelDataService";
 import Toast from "../components/Toast";
 import "./travelDashboard.css";
+import "./profileDashboard.css";
 
 const date = (value) => value ? new Date(value).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "Flexible";
 const initials = (name = "Traveler") => name.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase();
-function DashboardNav() { const { user, logout } = useAuth(); return <header className="account-nav"><Link className="auth-brand" to="/"><span>✦</span> Roamly</Link><nav><Link to="/profile">Dashboard</Link><Link to="/saved-trips">Trips</Link><Link to="/favorites">Favorites</Link><Link to="/settings">Settings</Link><button onClick={logout}>Log out</button></nav><span className="account-avatar">{user.profilePicture ? <img src={user.profilePicture} alt="" /> : initials(user.fullName)}</span></header>; }
+function DashboardNav() { const { user, logout } = useAuth(); return <header className="account-nav"><Link className="auth-brand" to="/"><span>✦</span> Roamly</Link><nav><Link to="/profile">Dashboard</Link><Link to="/saved-trips">Trips</Link><Link to="/favorites">Favorites</Link><Link to="/settings">Settings</Link><button onClick={logout}>Log out</button></nav><Link className="account-avatar" to="/settings" aria-label={`Open settings for ${user.fullName}`} title={user.fullName}>{user.profilePicture ? <img src={user.profilePicture} alt={`${user.fullName} profile`} /> : <span>{initials(user.fullName)}</span>}</Link></header>; }
 function LoadingCards() { return <div className="dashboard-cards">{[1,2,3,4].map((x) => <div className="dashboard-skeleton" key={x} />)}</div>; }
 
-export function DashboardPage() {
+function LegacyDashboardPage() {
   const { user } = useAuth(); const [state, setState] = useState({ loading: true, data: null, error: "" });
   const load = useCallback(() => { setState((s) => ({ ...s, loading: true, error: "" })); getDashboard().then((result) => setState({ loading: false, data: result.dashboard, error: "" })).catch((error) => setState({ loading: false, data: null, error: error.message })); }, []);
   useEffect(load, [load]); const data = state.data;
   return <main className="account-page"><DashboardNav /><section className="dashboard-heading"><div><p>WELCOME BACK</p><h1>{user.fullName}, where next?</h1><span>Your plans, saved places, and recent travel activity in one view.</span></div><Link to="/" className="account-primary">Plan a new trip</Link></section>{state.loading ? <LoadingCards /> : state.error ? <div className="dashboard-error"><p>{state.error}</p><button onClick={load}>Retry</button></div> : <><section className="dashboard-stats">{[["Total trips",data.statistics.totalTrips],["Favorite trips",data.statistics.favoriteTrips],["Upcoming",data.upcomingTrips.length],["Saved places",data.savedHotels.length+data.savedRestaurants.length+data.savedFlights.length]].map(([label,value]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</section><DashboardSection title="Upcoming trips" items={data.upcomingTrips} type="trip" empty="No upcoming trips yet." /><div className="dashboard-columns"><DashboardSection title="Saved hotels" items={data.savedHotels} /><DashboardSection title="Saved restaurants" items={data.savedRestaurants} /><DashboardSection title="Saved flights" items={data.savedFlights} /></div><DashboardSection title="Recent searches" items={data.recentSearches} type="search" empty="Search activity will appear here." /></>}</main>;
 }
 function DashboardSection({ title, items = [], type, empty = "Nothing saved yet." }) { return <section className="dashboard-section"><h2>{title}</h2>{items.length ? <div className="dashboard-list">{items.map((item) => { const value = item.data || item; return <article key={item._id}><strong>{type === "search" ? item.query : value.destination || value.name || value.airline || value.flightNumber || "Saved item"}</strong><span>{type === "trip" ? `${date(value.startDate)} – ${date(value.endDate)}` : type === "search" ? item.category : value.address || value.flightNumber || date(item.createdAt)}</span></article>; })}</div> : <p className="dashboard-empty">{empty}</p>}</section>; }
+
+export function DashboardPage() {
+  const { user } = useAuth();
+  const [state, setState] = useState({ loading: true, data: null, error: "" });
+  const [deletingIds, setDeletingIds] = useState(() => new Set());
+  const [deleteError, setDeleteError] = useState("");
+  const load = useCallback(() => { setState((current) => ({ ...current, loading: true, error: "" })); getDashboard().then((result) => setState({ loading: false, data: result.dashboard, error: "" })).catch((error) => setState({ loading: false, data: null, error: error.message })); }, []);
+  useEffect(load, [load]);
+  const removeSearch = async (id) => {
+    const searchId = String(id || "");
+    if (!searchId || deletingIds.has(searchId)) return;
+    const removedItem = state.data?.recentSearches.find((item) => String(item._id || item.id) === searchId);
+    const removedIndex = state.data?.recentSearches.indexOf(removedItem);
+    if (!removedItem) return;
+    setDeleteError("");
+    setDeletingIds((current) => new Set(current).add(searchId));
+    setState((current) => ({ ...current, data: { ...current.data, recentSearches: current.data.recentSearches.filter((item) => String(item._id || item.id) !== searchId) } }));
+    try { await deleteSearch(searchId); }
+    catch (error) {
+      setDeleteError(error.message || "Unable to remove that search. Please try again.");
+      setState((current) => { const restored = [...current.data.recentSearches]; restored.splice(Math.min(removedIndex, restored.length), 0, removedItem); return { ...current, data: { ...current.data, recentSearches: restored } }; });
+    } finally { setDeletingIds((current) => { const next = new Set(current); next.delete(searchId); return next; }); }
+  };
+  const data = state.data;
+  return <main className="account-page dashboard-page"><DashboardNav /><section className="dashboard-heading"><div><p>WELCOME BACK</p><h1>{user.fullName}, where next?</h1><span>Your plans, saved places, and recent travel inspiration—all in one beautiful view.</span></div><Link to="/" className="account-primary dashboard-plan">Plan a new trip <span>→</span></Link></section>{state.loading ? <LoadingCards /> : state.error && !data ? <div className="dashboard-error"><p>{state.error}</p><button onClick={load}>Retry</button></div> : <div className="dashboard-content"><section className="dashboard-stats">{[["◇","Total trips",data.statistics.totalTrips],["♥","Favorite trips",data.statistics.favoriteTrips],["↗","Upcoming",data.upcomingTrips.length],["⌖","Saved places",data.savedHotels.length+data.savedRestaurants.length+data.savedFlights.length]].map(([icon,label,value]) => <article key={label}><i>{icon}</i><div><strong>{value}</strong><span>{label}</span></div></article>)}</section><ProfileSection title="Upcoming trips" eyebrow="YOUR NEXT ADVENTURE" items={data.upcomingTrips} type="trip" empty="No upcoming trips yet. Plan a journey and it will appear here." /><section className="dashboard-saved"><div className="dashboard-section-heading"><div><small>YOUR COLLECTION</small><h2>Saved places</h2></div><Link to="/favorites">View favorites →</Link></div><div className="dashboard-columns"><ProfileSection title="Hotels" icon="⌂" items={data.savedHotels} compact /><ProfileSection title="Restaurants" icon="♨" items={data.savedRestaurants} compact /><ProfileSection title="Flights" icon="✈" items={data.savedFlights} compact /></div></section><RecentSearches items={data.recentSearches} deletingIds={deletingIds} error={deleteError} onRemove={removeSearch} /></div>}</main>;
+}
+
+function ProfileSection({ title, eyebrow, icon, items = [], type, empty = "Nothing saved yet.", compact = false }) { return <section className={`dashboard-section ${compact ? "compact" : ""}`}><div className="dashboard-section-heading"><div>{eyebrow && <small>{eyebrow}</small>}<h2>{icon && <i>{icon}</i>}{title}</h2></div></div>{items.length ? <div className="dashboard-list">{items.map((item) => { const value = item.data || item; return <article key={item._id}><div><strong>{value.destination || value.name || value.airline || value.flightNumber || "Saved item"}</strong><span>{type === "trip" ? `${date(value.startDate)} – ${date(value.endDate)}` : value.address || value.flightNumber || date(item.createdAt)}</span></div><b>→</b></article>; })}</div> : <p className="dashboard-empty">{empty}</p>}</section>; }
+function RecentSearches({ items = [], deletingIds, error, onRemove }) { return <section className="dashboard-section recent-searches"><div className="dashboard-section-heading"><div><small>RECENT ACTIVITY</small><h2>Recently searched</h2></div></div>{error && <p className="recent-search-error" role="alert">{error}</p>}<AnimatePresence initial={false} mode="popLayout">{items.length ? <motion.div layout className="recent-search-grid" key="search-list">{items.map((item) => { const id = String(item._id || item.id); return <motion.article layout key={id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: .94, x: 18 }} transition={{ duration: .22 }}><span className="recent-search-icon">⌕</span><div><strong>{item.query}</strong><span>{item.category || "destination"} · {date(item.createdAt)}</span></div><button type="button" disabled={deletingIds.has(id)} onClick={(event) => { event.stopPropagation(); onRemove(id); }} aria-label={`Remove ${item.query} from recent searches`}>×</button></motion.article>; })}</motion.div> : <motion.div className="dashboard-empty recent-empty" key="search-empty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}><span>⌕</span><p>No recent searches yet. Start exploring destinations.</p><Link to="/">Explore destinations</Link></motion.div>}</AnimatePresence></section>; }
 
 export function MongoTripsPage({ favoritesOnly = false }) {
   const [state, setState] = useState({ loading: true, trips: [], page: 1, pages: 1 }); const [toast, setToast] = useState({ message: "", type: "success" }); const [editing, setEditing] = useState(null);
