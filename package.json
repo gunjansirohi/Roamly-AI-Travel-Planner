@@ -2,10 +2,16 @@
   "name": "ai-travel-planner",
   "version": "1.0.0",
   "private": true,
+
+  "engines": {
+    "node": "20.x"
+  },
+
   "workspaces": [
     "frontend",
     "backend"
   ],
+
   "scripts": {
     "start": "npm run start --workspace=backend",
     "dev": "npm run dev --workspace=backend",
