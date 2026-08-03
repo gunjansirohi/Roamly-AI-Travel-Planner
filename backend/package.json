@@ -7,7 +7,7 @@
     "start": "node src/index.mjs"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@google/genai": "^2.11.0",
