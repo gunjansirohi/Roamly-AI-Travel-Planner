@@ -2,10 +2,16 @@
   "name": "ai-travel-planner",
   "version": "1.0.0",
   "private": true,
+
+  "engines": {
+    "node": "24.x"
+  },
+
   "workspaces": [
     "frontend",
     "backend"
   ],
+
   "scripts": {
     "start": "npm run start --workspace=backend",
     "dev": "npm run dev --workspace=backend",
@@ -14,6 +20,7 @@
     "build": "npm run build --workspace=frontend"
   },
   "devDependencies": {
-    "concurrently": "^10.0.3"
+    "concurrently": "^10.0.3",
+     "rollup": "^4.52.5"
   }
 }
