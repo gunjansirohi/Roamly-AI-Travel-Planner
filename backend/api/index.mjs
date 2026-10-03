@@ -1,6 +1,6 @@
-import { createApp } from "../backend/app.mjs";
-import config from "../backend/config/index.mjs";
-import { connectDatabase } from "../backend/services/database.mjs";
+import { createApp } from "../src/app.mjs";
+import config from "../src/config/index.mjs";
+import { connectDatabase } from "../src/services/database.mjs";
 
 if (process.env.NODE_ENV === "production") {
   const missing = [
