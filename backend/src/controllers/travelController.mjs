@@ -113,7 +113,7 @@ app.delete("/api/favorites/:kind/:placeId", requireAuth, async (request, respons
   return response.json({ success: true, persistent: databaseReady() });
 });
 
-app.get("/api/destinations/search", async (request, response) => {
+app.get("/destinations/search", async (request, response) => {
   const requestId = createRequestId();
   const query = String(request.query.q || "").trim();
   if (query.length < 3 || query.length > 120) return sendError(response, 400, "Enter between 3 and 120 characters to search destinations.", requestId);
@@ -135,7 +135,7 @@ app.get("/api/destinations/search", async (request, response) => {
   }
 });
 
-app.get("/api/destination-weather", async (request, response) => {
+app.get("/destination-weather", async (request, response) => {
   const latitude = Number(request.query.latitude); const longitude = Number(request.query.longitude);
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return sendError(response, 400, "Enter valid destination coordinates.");
   try { const result = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,wind_speed_10m&timezone=auto`); if (!result.ok) throw new Error("weather unavailable"); const data = await result.json(); return response.json({ success: true, weather: { temperature: Math.round(data.current?.temperature_2m), wind: Math.round(data.current?.wind_speed_10m), timezone: data.timezone } }); }
@@ -264,7 +264,7 @@ async function fetchMockHotels(city, requestId) {
 }
 
 // Search hotels around a geocoded city centre through Google Places API (New).
-app.get("/api/hotels", async (request, response) => {
+app.get("/hotels", async (request, response) => {
   const requestId = createRequestId();
   const city = typeof request.query.city === "string" ? request.query.city.trim() : "";
   if (!city || city.length > 120) return sendError(response, 400, "Enter a valid destination to find hotels.", requestId);
@@ -316,7 +316,7 @@ app.get("/api/hotels", async (request, response) => {
 });
 
 // Fetch expanded hotel details only after a traveller opens a card.
-app.get("/api/hotels/:placeId", async (request, response) => {
+app.get("/hotels/:placeId", async (request, response) => {
   const requestId = createRequestId();
   const placeId = String(request.params.placeId || "").trim();
   if (!/^[A-Za-z0-9_-]{5,250}$/.test(placeId)) return sendError(response, 400, "Invalid hotel identifier.", requestId);
@@ -470,7 +470,7 @@ function restaurantCategories(place) {
 }
 function publicRestaurant(place, cityCenter) { const location = place.location || {}; const categories = restaurantCategories(place); return { id: place.id, name: place.displayName?.text || "Place", address: place.formattedAddress || "Address unavailable", coordinates: { latitude: location.latitude, longitude: location.longitude }, rating: Number(place.rating) || 0, reviewCount: Number(place.userRatingCount) || 0, priceLevel: place.priceLevel || "PRICE_LEVEL_UNSPECIFIED", openNow: place.regularOpeningHours?.openNow ?? null, category: categories[0], categories, distanceKm: Number.isFinite(location.latitude) && Number.isFinite(location.longitude) ? haversineDistance(cityCenter, location) : null, mapsUrl: place.googleMapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName?.text || "place")}`, website: place.websiteUri || "", phone: place.nationalPhoneNumber || "" }; }
 
-app.get("/api/restaurants", async (request, response) => {
+app.get("/restaurants", async (request, response) => {
   const requestId = createRequestId(); const city = typeof request.query.city === "string" ? request.query.city.trim() : "";
   if (!city || city.length > 120) return sendError(response, 400, "Enter a valid destination to find restaurants.", requestId);
   void saveRecentSearch({ query: city, category: "restaurants" });
@@ -496,7 +496,7 @@ app.get("/api/restaurants", async (request, response) => {
   } catch (error) { console.error(`[${requestId}] Restaurant provider failed; using local dataset.`, { city, status: error?.status, message: error?.message }); const restaurants = (await localData("restaurants")).map((item) => ({ ...item, mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.name} ${city}`)}`, website: "", phone: "", coordinates: { latitude: 0, longitude: 0 } })); const data = { restaurants, cityCenter: null, savedAt: Date.now() }; restaurantCache.set(cacheKey, data); return response.json({ success: true, ...data, fallback: true, message: "Live restaurant information is temporarily unavailable." }); }
 });
 
-app.get("/api/restaurants/:placeId", async (request, response) => {
+app.get("/restaurants/:placeId", async (request, response) => {
   const placeId = String(request.params.placeId || "").trim(); if (!/^[A-Za-z0-9_-]{5,250}$/.test(placeId)) return sendError(response, 400, "Invalid restaurant identifier.");
   const cached = restaurantDetailCache.get(placeId);
   if (cached && Date.now() - cached.savedAt < RESTAURANT_DETAIL_CACHE_TTL) return response.json({ success: true, details: cached.details, cached: true });
@@ -504,7 +504,7 @@ app.get("/api/restaurants/:placeId", async (request, response) => {
   try { const result = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=en`, { headers: { "X-Goog-Api-Key": googleMapsApiKey, "X-Goog-FieldMask": RESTAURANT_DETAIL_FIELDS } }); const place = await result.json().catch(() => null); if (!result.ok) throw new Error("Restaurant details failed"); const amenities = [place.outdoorSeating ? "Outdoor seating" : "", place.servesVegetarianFood ? "Vegetarian options" : "", place.goodForChildren ? "Good for children" : "", place.parkingOptions?.freeParking ? "Free parking" : "", place.accessibilityOptions?.wheelchairAccessibleEntrance ? "Accessible entrance" : ""].filter(Boolean); const details = { description: place.editorialSummary?.text || "No restaurant description is available.", openingHours: place.regularOpeningHours?.weekdayDescriptions || [], amenities, reviews: place.reviews || [] }; restaurantDetailCache.set(placeId, { details, savedAt: Date.now() }); return response.json({ success: true, details }); } catch { return response.json({ success: true, details: { description: "Detailed information is temporarily unavailable.", openingHours: [], amenities: [], reviews: [] } }); }
 });
 
-app.get("/api/flights", async (request, response) => {
+app.get("/flights", async (request, response) => {
   const departure = typeof request.query.departure === "string" ? request.query.departure.trim() : "";
   const destination = typeof request.query.destination === "string" ? request.query.destination.trim() : "";
   const departureDate = typeof request.query.departureDate === "string" ? request.query.departureDate : "";
@@ -656,7 +656,7 @@ async function fetchFallbackWeather(city, requestId) {
 }
 
 // Resolve a city and proxy One Call 3.0 data: current weather, hourly, daily and UV index.
-app.get("/api/weather", async (request, response) => {
+app.get("/weather", async (request, response) => {
   const requestId = createRequestId();
   const city = typeof request.query.city === "string" ? request.query.city.trim() : "";
   console.info(`[${requestId}] Weather request received`, { city });
@@ -711,7 +711,7 @@ app.get("/api/weather", async (request, response) => {
   }
 });
 
-app.post("/api/ai-trip", requireAuth, async (request, response) => {
+app.post("/ai-trip", requireAuth, async (request, response) => {
   const requestId = createRequestId();
   const prompt = typeof request.body?.prompt === "string" ? request.body.prompt.trim() : "";
   // The client locale is validated before it is included in the model instruction.

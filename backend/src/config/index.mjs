@@ -7,8 +7,8 @@ const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_URL || "
   .filter(Boolean);
 
 const deployedClientOrigins = [
-  "https://travel-planner-gunjansirohi4-4363s-projects.vercel.app",
-  "https://roamly-ai-travel-planner-t.vercel.app",
+  "https://roamly-ai-travel-planner-q5xwt8hkc-gunjansirohi4-4363s-projects.vercel.app",
+  "=https://roamly-ai-travel-planner-q5xwt8hkc-gunjansirohi4-4363s-projects.vercel.app",
 ];
 
 deployedClientOrigins.forEach((origin) => {
