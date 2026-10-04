@@ -39,7 +39,7 @@ export function createApp() {
     database: databaseReady() ? "connected" : "disconnected",
     timestamp: new Date().toISOString(),
   }));
-  app.use(createApiRouter());
+  app.use("/api", createApiRouter());
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;
