@@ -61,7 +61,7 @@ In Atlas, create a database user, allow the deployment server IP in Network Acce
 
 ## Deployment
 
-Build the frontend with `npm run build`. Deploy `backend/` as a Node service with `NODE_ENV=production`, `JWT_SECRET`, `MONGODB_URI`, provider credentials, `CLIENT_URL`, and exact `CLIENT_ORIGINS`. Deploy the frontend build behind HTTPS and set `REACT_APP_API_BASE_URL` to the HTTPS API origin. HTTPS is required for production secure cookies. The included Compose file can be used for self-hosted MongoDB; replace its Mongo URI with Atlas when using Atlas.
+Build the frontend with `npm run build` and set `VITE_API_BASE_URL` to `https://roamly-ai-travel-planner-khaki.vercel.app`. The frontend calls the existing Vercel API using paths under `/api`. HTTPS is required for production secure cookies. The included Compose file can be used for self-hosted MongoDB; replace its Mongo URI with Atlas when using Atlas.
 
 ## Reliability and performance
 

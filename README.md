@@ -47,7 +47,7 @@ Configure the backend with your deployment platform's environment-variable setti
 Build the frontend with the public API origin. This value is compiled into the browser bundle, so it must not contain a secret:
 
 ```powershell
-$env:VITE_API_URL = $env:ROAMLY_API_ORIGIN
+$env:VITE_API_BASE_URL = "https://roamly-ai-travel-planner-khaki.vercel.app"
 npm run build
 ```
 
@@ -59,4 +59,4 @@ Build and run both services locally in production mode:
 docker compose up --build
 ```
 
-Open `http://localhost:8080`. For a public deployment, change the frontend build argument `VITE_API_URL` and backend `CLIENT_ORIGINS` to the final HTTPS domains, and add provider keys through the platform's secret manager.
+Open `http://localhost:8080`. For a public deployment, set the frontend build argument `VITE_API_BASE_URL` to the HTTPS API origin and backend `CLIENT_ORIGINS` to the frontend's HTTPS domain, and add provider keys through the platform's secret manager.
