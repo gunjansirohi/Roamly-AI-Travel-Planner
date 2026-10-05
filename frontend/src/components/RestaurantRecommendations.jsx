@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { apiUrl } from "../config";
 import "./RestaurantRecommendations.css";
 import { useAuth } from "../context/AuthContext";
@@ -9,12 +12,15 @@ const categories = ["All", "Indian", "Chinese", "Italian", "Mexican", "Japanese"
 const sortingOptions = ["Highest Rated", "Nearest", "Lowest Price", "Highest Price", "Most Popular"];
 const priceLabels = { PRICE_LEVEL_FREE: "Free", PRICE_LEVEL_INEXPENSIVE: "$", PRICE_LEVEL_MODERATE: "$$", PRICE_LEVEL_EXPENSIVE: "$$$", PRICE_LEVEL_VERY_EXPENSIVE: "$$$$", PRICE_LEVEL_UNSPECIFIED: "Price unavailable" };
 const priceRank = (price) => ["PRICE_LEVEL_FREE", "PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE", "PRICE_LEVEL_EXPENSIVE", "PRICE_LEVEL_VERY_EXPENSIVE"].indexOf(price);
+const restaurantMarker = L.divIcon({ className: "restaurant-map-pin", html: "<span>R</span>", iconSize: [30, 30], iconAnchor: [15, 15] });
 
 export default function RestaurantRecommendations({ destination }) {
   const { user } = useAuth();
   const city = destination.trim();
-  const [state, setState] = useState({ status: "idle", restaurants: [], error: "" });
+  const [state, setState] = useState({ status: "idle", restaurants: [], cityCenter: null, error: "" });
   const [category, setCategory] = useState("All");
+  const [minimumRating, setMinimumRating] = useState("0");
+  const [price, setPrice] = useState("Any price");
   const [sort, setSort] = useState("Highest Rated");
   const [search, setSearch] = useState("");
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
@@ -23,7 +29,7 @@ export default function RestaurantRecommendations({ destination }) {
   const saveRestaurant = async () => { if (!user) { window.location.assign("/login"); return; } try { await saveProviderItem("restaurants", selectedRestaurant); setSaveNotice("Restaurant saved to your dashboard."); } catch (error) { setSaveNotice(error.message); } };
 
   useEffect(() => {
-    if (city.length < 2) { setState({ status: "idle", restaurants: [], error: "" }); return undefined; }
+    if (city.length < 2) { setState({ status: "idle", restaurants: [], cityCenter: null, error: "" }); return undefined; }
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setState((current) => ({ ...current, status: "loading", error: "" }));
@@ -31,7 +37,7 @@ export default function RestaurantRecommendations({ destination }) {
         const response = await fetch(apiUrl(`/api/restaurants?city=${encodeURIComponent(city)}`), { signal: controller.signal });
         const payload = await response.json().catch(() => null);
         if (!response.ok || !payload?.success || !Array.isArray(payload.restaurants)) throw new Error(payload?.error?.message || "Unable to load restaurant recommendations.");
-        setState({ status: "ready", restaurants: payload.restaurants, error: "" });
+        setState({ status: "ready", restaurants: payload.restaurants, cityCenter: payload.cityCenter || null, error: "" });
         if (user) void recordSearch(city, "restaurant", { results: payload.restaurants.length }).catch(() => {});
       } catch (error) { if (error.name !== "AbortError") setState({ status: "error", restaurants: [], error: error.message || "Unable to reach restaurant recommendations." }); }
     }, 450);
@@ -40,22 +46,25 @@ export default function RestaurantRecommendations({ destination }) {
 
   const restaurants = useMemo(() => state.restaurants.filter((restaurant) => {
     const matchesCategory = category === "All" || restaurant.categories?.includes(category);
+    const matchesRating = restaurant.rating >= Number(minimumRating);
+    const maximumPrice = price === "Any price" ? Infinity : Number(price);
+    const matchesPrice = priceRank(restaurant.priceLevel) < 0 || priceRank(restaurant.priceLevel) <= maximumPrice;
     const searchable = `${restaurant.name} ${restaurant.address} ${(restaurant.categories || []).join(" ")}`.toLowerCase();
-    return matchesCategory && (!search.trim() || searchable.includes(search.trim().toLowerCase()));
+    return matchesCategory && matchesRating && matchesPrice && (!search.trim() || searchable.includes(search.trim().toLowerCase()));
   }).sort((a, b) => {
     if (sort === "Nearest") return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
     if (sort === "Lowest Price") return priceRank(a.priceLevel) - priceRank(b.priceLevel) || b.rating - a.rating;
     if (sort === "Highest Price") return priceRank(b.priceLevel) - priceRank(a.priceLevel) || b.rating - a.rating;
     if (sort === "Most Popular") return b.reviewCount - a.reviewCount;
     return b.rating - a.rating || b.reviewCount - a.reviewCount;
-  }), [state.restaurants, category, search, sort]);
+  }), [state.restaurants, category, minimumRating, price, search, sort]);
 
   if (!city) return null;
   return <section className="restaurant-recommendations" aria-label="Restaurant recommendations">
     <div className="restaurant-heading"><div><p>LOCAL FLAVOURS, CURATED FOR YOU</p><h2>Restaurant <em>Recommendations</em></h2><span>Great places to eat around {city}, powered by Google Places.</span></div><label>Sort by<select value={sort} onChange={(event) => setSort(event.target.value)}>{sortingOptions.map((option) => <option key={option}>{option}</option>)}</select></label></div>
     {state.status === "loading" && <Skeleton />}
     {state.status === "error" && <Feedback error={state.error} onRetry={() => setRetryKey((value) => value + 1)} />}
-    {state.status === "ready" && <><div className="restaurant-tools"><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search restaurants by name" aria-label="Search restaurants by name" /><div className="category-chips">{categories.map((item) => <button type="button" key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div></div>{restaurants.length ? <motion.div layout className="restaurant-grid">{restaurants.map((restaurant, index) => <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} onOpen={() => setSelectedRestaurant(restaurant)} />)}</motion.div> : <Feedback />}</>}
+    {state.status === "ready" && <><div className="restaurant-tools"><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search restaurants by name" aria-label="Search restaurants by name" /><div className="restaurant-filter-selects"><label>Rating<select value={minimumRating} onChange={(event) => setMinimumRating(event.target.value)}><option value="0">Any rating</option><option value="3">3+</option><option value="4">4+</option><option value="4.5">4.5+</option></select></label><label>Price<select value={price} onChange={(event) => setPrice(event.target.value)}><option>Any price</option><option value="1">Budget</option><option value="2">Moderate</option><option value="3">Premium</option></select></label></div><div className="category-chips">{categories.map((item) => <button type="button" key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div></div>{state.cityCenter && <div className="restaurant-map"><MapContainer center={[state.cityCenter.latitude, state.cityCenter.longitude]} zoom={12} scrollWheelZoom={false} className="h-full w-full"><TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />{restaurants.filter((restaurant) => Number.isFinite(restaurant.coordinates?.latitude) && Number.isFinite(restaurant.coordinates?.longitude) && (restaurant.coordinates.latitude !== 0 || restaurant.coordinates.longitude !== 0)).map((restaurant) => <Marker key={restaurant.id} position={[restaurant.coordinates.latitude, restaurant.coordinates.longitude]} icon={restaurantMarker} eventHandlers={{ click: () => setSelectedRestaurant(restaurant) }} />)}</MapContainer><span>Restaurant map · select a marker to view details</span></div>}{restaurants.length ? <motion.div layout className="restaurant-grid">{restaurants.map((restaurant, index) => <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} onOpen={() => setSelectedRestaurant(restaurant)} />)}</motion.div> : <Feedback />}</>}
     {selectedRestaurant && <button type="button" className="restaurant-save-selected" onClick={saveRestaurant}>{saveNotice || "♡ Save this restaurant"}</button>}
     <AnimatePresence>{selectedRestaurant && <RestaurantModal restaurant={selectedRestaurant} onClose={() => { setSelectedRestaurant(null); setSaveNotice(""); }} />}</AnimatePresence>
   </section>;

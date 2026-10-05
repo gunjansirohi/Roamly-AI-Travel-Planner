@@ -28,3 +28,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) { background:#10211e!important;color:#edf5ef!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) h1 { color:#f2f7f3; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) h1 span,html[data-theme="dark"] main:has(> header > .back-to-roamly) h2 em { color:#afd893!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) p.text-\[\#5b7f60\] { color:#a9d18d!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) form { border-color:#345149!important;background:#19332e!important;color:#edf5ef; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) form label { color:#d5e5d9!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) form textarea,html[data-theme="dark"] main:has(> header > .back-to-roamly) form input,html[data-theme="dark"] main:has(> header > .back-to-roamly) form select { background:#102823!important;color:#edf5ef!important;border-color:#456158!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) form textarea::placeholder,html[data-theme="dark"] main:has(> header > .back-to-roamly) form input::placeholder { color:#a7b9af!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) > section > div > button { border-color:#456158!important;background:#19332e!important;color:#d5e5d9!important; }
+html[data-theme="dark"] main:has(> header > .back-to-roamly) > section > div > button:hover { background:#24463d!important; }
