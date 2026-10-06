@@ -1,15 +1,17 @@
 // Central server configuration.
 // Keep this file server-only.
-
+import "dotenv/config";
 const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_URL || "")
   .split(",")
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
 
-const deployedClientOrigins = [
-  "https://roamly-ai-travel-planner-q5xwt8hkc-gunjansirohi4-4363s-projects.vercel.app",
-  "=https://roamly-ai-travel-planner-q5xwt8hkc-gunjansirohi4-4363s-projects.vercel.app",
+
+  const deployedClientOrigins = [
+  "https://roamly-ai-travel-planner-t.vercel.app",
+  "http://localhost:5173",
 ];
+
 
 deployedClientOrigins.forEach((origin) => {
   if (!clientOrigins.includes(origin)) {
