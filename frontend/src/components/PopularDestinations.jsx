@@ -43,7 +43,7 @@ export default function PopularDestinations({ onExplore }) {
               <div className="p-5 text-white">
                 <div className="flex items-center justify-between gap-3"><h3 className="text-xl font-bold">{destination.name}</h3>{/* Destination budgets are canonical INR values formatted by the shared context. */}<span className="text-xs font-semibold text-[#d6fb72]">From {formatCurrency(destination.budget, "INR", { maximumFractionDigits: 0 })}</span></div>
                 <p className="mt-2 min-h-[42px] text-sm leading-5 text-white/65">{destination.description}</p>
-                <button type="button" onClick={() => onExplore(destination.name)} className="mt-5 w-full rounded-full border border-[#d6fb72]/70 bg-[#d6fb72] px-4 py-2.5 text-sm font-bold text-[#15201d] transition duration-300 hover:border-[#e9f6cb] hover:bg-[#e9f6cb] hover:text-[#15201d] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#173b35]">Explore <span aria-hidden="true" className="ml-1">→</span></button>
+                <button type="button" onClick={() => onExplore(destination.name)} className="mt-5 w-full rounded-full border border-[#d6fb72]/70 bg-[#d6fb72] px-4 py-2.5 text-sm font-bold text-white transition duration-300 hover:border-[#e9f6cb] hover:bg-[#e9f6cb] hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#173b35]">Explore <span aria-hidden="true" className="ml-1">→</span></button>
               </div>
             </motion.article>
           ))}

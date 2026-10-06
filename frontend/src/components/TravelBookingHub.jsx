@@ -6,11 +6,11 @@ import RestaurantRecommendations from "./RestaurantRecommendations";
 import FlightSuggestions from "./FlightSuggestions";
 import "./TravelBookingHub.css";
 
-const sections = [["hotels", "Hotels", "Find a stay"], ["restaurants", "Restaurants", "Plan meals"], ["flights", "Flights", "Compare fares"]];
+const sections = [["hotels", "Stays", "Find a stay"], ["restaurants", "Restaurants", "Plan meals"], ["flights", "Flights", "Compare fares"]];
 
 // Keeps recommendation verticals independent and delays API calls until selected.
 export default function TravelBookingHub({ destination }) {
-  const [active, setActive] = useState("hotels");
+  const [active, setActive] = useState("restaurants");
   const share = async () => {
     try { if (navigator.share) await navigator.share({ title: "Roamly travel options", text: `Travel options for ${destination}`, url: window.location.href }); else await navigator.clipboard.writeText(window.location.href); } catch { /* Native share cancellation needs no UI error. */ }
   };
