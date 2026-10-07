@@ -1,17 +1,17 @@
 // Central server configuration.
 // Keep this file server-only.
+
 import "dotenv/config";
+
 const clientOrigins = (process.env.CLIENT_ORIGINS || process.env.CLIENT_URL || "")
   .split(",")
   .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
 
-
-  const deployedClientOrigins = [
+const deployedClientOrigins = [
   "https://roamly-ai-travel-planner-t.vercel.app",
   "http://localhost:5173",
 ];
-
 
 deployedClientOrigins.forEach((origin) => {
   if (!clientOrigins.includes(origin)) {
@@ -23,10 +23,8 @@ const config = Object.freeze({
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
   geminiApiKey: process.env.GEMINI_API_KEY || "",
   openWeatherApiKey: process.env.OPENWEATHER_API_KEY || "",
-
   amadeusClientId: process.env.AMADEUS_CLIENT_ID || "",
   amadeusClientSecret: process.env.AMADEUS_CLIENT_SECRET || "",
-
   mongoUri: process.env.MONGODB_URI || "",
 
   geminiModel: process.env.GEMINI_MODEL || "gemini-3.5-flash",
@@ -50,7 +48,9 @@ const config = Object.freeze({
   rememberMeExpiresIn:
     process.env.JWT_REMEMBER_EXPIRES_IN || "30d",
 
-  clientUrl: process.env.CLIENT_URL || "",
+  clientUrl:
+    process.env.CLIENT_URL ||
+    "https://roamly-ai-travel-planner-t.vercel.app",
 
   requestTimeoutMs: Number.parseInt(
     process.env.API_TIMEOUT_MS || "15000",
