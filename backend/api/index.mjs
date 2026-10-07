@@ -4,7 +4,7 @@ import config from "../src/config/index.mjs";
 
 const app = createApp();
 
-let dbPromise;
+let dbPromise = null;
 
 async function initialize() {
   if (!dbPromise) {
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     console.error("Vercel API error:", error);
 
     if (!res.headersSent) {
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: {
           message: "Internal server error",
