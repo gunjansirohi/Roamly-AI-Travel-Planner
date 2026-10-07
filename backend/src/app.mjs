@@ -4,19 +4,21 @@ import compression from "compression";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { rateLimit } from "express-rate-limit";
+
 export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
 
- 
+  // Allowed frontend origins
   const allowedOrigins = [
     "https://roamly-ai-travel-planner-t.vercel.app",
     "http://localhost:5173",
     "http://localhost:5174",
   ];
 
+  // CORS
   app.use(
     cors({
       origin: (origin, callback) => {
@@ -33,16 +35,6 @@ export function createApp() {
       maxAge: 86400,
     })
   );
-  app.options(
-  "*",
-  cors({
-    origin: "https://roamly-ai-travel-planner-t.vercel.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 204,
-  })
-);
 
   // Rate limiting
   app.use(
