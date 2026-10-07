@@ -5,6 +5,13 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { rateLimit } from "express-rate-limit";
 
+import { databaseReady } from "./services/database.mjs";
+import { createApiRouter } from "./routes/apiRoutes.mjs";
+import {
+  notFoundHandler,
+  errorHandler,
+} from "./middleware/errorHandlers.mjs";
+
 export function createApp() {
   const app = express();
 
@@ -22,25 +29,39 @@ export function createApp() {
   app.use(
     cors({
       origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no Origin header
+        // (health checks, server-to-server requests, etc.)
+        if (!origin) {
           return callback(null, true);
         }
 
-        return callback(new Error(`CORS blocked origin: ${origin}`));
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(
+          new Error(`CORS blocked origin: ${origin}`)
+        );
       },
+
       credentials: true,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+
+      methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS",
+      ],
+
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+      ],
+
       optionsSuccessStatus: 204,
       maxAge: 86400,
-    })
-  );
-
-  // Rate limiting
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: 100,
     })
   );
 
@@ -53,8 +74,10 @@ export function createApp() {
     })
   );
 
+  // Compression
   app.use(compression());
 
+  // Rate limiting
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000,
@@ -72,12 +95,21 @@ export function createApp() {
 
   // Additional security headers
   app.use((request, response, next) => {
-    response.setHeader("X-Content-Type-Options", "nosniff");
-    response.setHeader("X-Frame-Options", "DENY");
+    response.setHeader(
+      "X-Content-Type-Options",
+      "nosniff"
+    );
+
+    response.setHeader(
+      "X-Frame-Options",
+      "DENY"
+    );
+
     response.setHeader(
       "Referrer-Policy",
       "strict-origin-when-cross-origin"
     );
+
     next();
   });
 
@@ -89,13 +121,15 @@ export function createApp() {
   app.get("/api/health", (_request, response) => {
     response.status(200).json({
       status: "ok",
-      database: databaseReady() ? "connected" : "disconnected",
+      database: databaseReady()
+        ? "connected"
+        : "disconnected",
       timestamp: new Date().toISOString(),
     });
   });
 
   // API routes
-  app.use("/api", createApiRouter());
+  app.use(createApiRouter());
 
   // 404 handler
   app.use(notFoundHandler);
