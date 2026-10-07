@@ -21,15 +21,18 @@ async function initialize() {
 export default async function handler(req, res) {
   try {
     await initialize();
-    app(req, res);
+
+    return app(req, res);
   } catch (error) {
     console.error("Vercel API error:", error);
 
-    res.status(500).json({
-      success: false,
-      error: {
-        message: "Internal server error",
-      },
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          message: "Internal server error",
+        },
+      });
+    }
   }
 }
