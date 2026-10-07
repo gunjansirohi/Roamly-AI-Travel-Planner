@@ -1,23 +1,32 @@
-import cors from "cors";
-import compression from "compression";
-import express from "express";
-import helmet from "helmet";
-import cookieParser from "cookie-parser";
-import { rateLimit } from "express-rate-limit";
-
-import config from "./config/index.mjs";
-import {
-  errorHandler,
-  notFoundHandler,
-} from "./middleware/errorHandlers.mjs";
-import { createApiRouter } from "./routes/apiRoutes.mjs";
-import { databaseReady } from "./services/database.mjs";
-
 export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
+
+  // CORS — must run before rate limiting and other middleware
+  const allowedOrigins = [
+    "https://roamly-ai-travel-planner-t.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:5174",
+  ];
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked origin: ${origin}`));
+      },
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      optionsSuccessStatus: 204,
+      maxAge: 86400,
+    })
+  );
 
   // Rate limiting
   app.use(
@@ -64,51 +73,6 @@ export function createApp() {
     next();
   });
 
-  // CORS
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        const allowedOrigins = [
-          "https://roamly-ai-travel-planner-t.vercel.app",
-          "http://localhost:5173",
-          "http://localhost:5174",
-        ];
-
-        // Allow requests without an Origin header
-        // (health checks, server-to-server requests, etc.)
-        if (!origin) {
-          return callback(null, true);
-        }
-
-        if (allowedOrigins.includes(origin)) {
-          return callback(null, true);
-        }
-
-        return callback(new Error(`CORS blocked origin: ${origin}`));
-      },
-
-      methods: [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS",
-      ],
-
-      allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-      ],
-
-      credentials: true,
-
-      optionsSuccessStatus: 204,
-
-      maxAge: 86400,
-    })
-  );
-
   // Body parsers
   app.use(express.json({ limit: "16kb" }));
   app.use(cookieParser());
@@ -122,8 +86,7 @@ export function createApp() {
     });
   });
 
-  // IMPORTANT:
-  // All API routes start with /api
+  // API routes
   app.use("/api", createApiRouter());
 
   // 404 handler
