@@ -27,6 +27,16 @@ export function createApp() {
       maxAge: 86400,
     })
   );
+  app.options(
+  "*",
+  cors({
+    origin: "https://roamly-ai-travel-planner-t.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
+  })
+);
 
   // Rate limiting
   app.use(
