@@ -35,3 +35,151 @@ html[data-theme="dark"] .booking-hub .flight-form input::placeholder,
 html[data-theme="dark"] .booking-hub .flight-controls input::placeholder { color: #a7b9af; opacity: 1; }
 html[data-theme="dark"] .booking-hub .flight-controls label,
 html[data-theme="dark"] .booking-hub .flight-note { color: #d5e5d9; }
+
+/* Flight Suggestions keeps the page chrome dark while preserving bright result cards. */
+html[data-theme="dark"] .booking-hub .flight-suggestions {
+  color: #f1f0e7;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-heading p,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-heading span,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls label,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-note {
+  color: #b8c8bf;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-heading h2 { color: #f1f0e7; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-heading em { color: #b8d58a; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form {
+  border-color: #315449;
+  background: #0d2a22;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form input,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls input,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls select {
+  border-color: #315449;
+  background: #0d2a22;
+  color: #f1f0e7;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form input::placeholder,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls input::placeholder { color: #b8c8bf; opacity: 1; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form button,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-bottom a,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-modal-actions a {
+  background: #a8c878;
+  color: #10231b !important;
+  transition: background-color .2s ease, filter .2s ease;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form button:hover,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-bottom a:hover,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-modal-actions a:hover {
+  background: #b8d58a;
+  filter: brightness(1.03);
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button {
+  border-color: #d6d7c9;
+  background: #e8e8dc;
+  color: #12382d;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button.active,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button:hover {
+  border-color: #a8c878;
+  background: #a8c878;
+  color: #10231b !important;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card {
+  border-color: #e2e3d8;
+  background: #fff;
+  color: #12382d;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-bottom { color: #12382d; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline small,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route span,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route small { color: #52645c; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline>b,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-bottom>b { color: #b88732; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls select { color-scheme: dark; }
+
+/* Full dark treatment is enabled only while the site theme is dark. */
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form {
+  border-color: #31564a;
+  background: #0d2a22;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form input,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls input,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls select {
+  border-color: #35584e;
+  background: #09241e;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-form input::placeholder,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-controls input::placeholder { color: #8fa69d; }
+html[data-theme="dark"] .booking-hub .flight-suggestions input,
+html[data-theme="dark"] .booking-hub .flight-suggestions select { color-scheme: dark; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button {
+  border-color: #234c40;
+  background: #12372e;
+  color: #dce7e1;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button:hover {
+  border-color: #31564a;
+  background: #1b463a;
+  color: #f1f0e7;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button.active,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-filters button.active:hover {
+  border-color: #a8c878;
+  background: #a8c878;
+  color: #10231b !important;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card {
+  border-color: #31564a;
+  border-radius: 1.2rem;
+  background: #0b2821;
+  color: #f1f0e7;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card:hover,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card:focus {
+  border-color: #49675d;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, .24);
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-bottom { color: #f1f0e7; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline small,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route span,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route small { color: #afc2b9; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route p { color: #b7c8bf; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-route i { border-color: #49675d; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-airline>b,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-card .flight-bottom>b,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-modal-actions>b { color: #c18a2d; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-feedback,
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-skeleton {
+  border-color: #31564a;
+  background: #0b2821;
+  color: #f1f0e7;
+}
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-feedback p { color: #afc2b9; }
+html[data-theme="dark"] .booking-hub .flight-suggestions .flight-skeleton>* {
+  background: linear-gradient(90deg, #12372e 25%, #1b463a 50%, #12372e 75%);
+  background-size: 200% 100%;
+}
+html[data-theme="dark"] .flight-modal {
+  border: 1px solid #31564a;
+  background: #0b2821;
+  color: #f1f0e7;
+}
+html[data-theme="dark"] .flight-modal>button { background: #12372e; color: #f1f0e7; }
+html[data-theme="dark"] .flight-modal h2 { color: #f1f0e7; }
+html[data-theme="dark"] .flight-modal .flight-kicker,
+html[data-theme="dark"] .flight-modal .flight-itinerary span,
+html[data-theme="dark"] .flight-modal .flight-itinerary em { color: #afc2b9; }
+html[data-theme="dark"] .flight-modal .flight-itinerary { border-color: #49675d; }
+html[data-theme="dark"] .flight-modal .flight-modal-actions>button {
+  border: 1px solid #31564a;
+  border-radius: .8rem;
+  background: #12372e;
+  color: #dce7e1;
+  padding: .6rem .8rem;
+}

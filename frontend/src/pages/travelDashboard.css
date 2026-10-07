@@ -1,1 +1,80 @@
 .dashboard-heading{max-width:1100px;margin:55px auto 25px;display:flex;justify-content:space-between;align-items:end;gap:25px}.dashboard-heading p{font-size:.72rem;letter-spacing:.18em;font-weight:900}.dashboard-heading h1{font:clamp(2.4rem,5vw,4.5rem) Georgia,serif;margin:8px 0}.dashboard-heading>div>span{color:#647973}.dashboard-heading .account-primary{width:max-content}.dashboard-stats,.dashboard-cards{max-width:1100px;margin:30px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.dashboard-stats article,.dashboard-section,.mongo-trip{border:1px solid var(--auth-line);background:rgba(255,255,255,.68);border-radius:22px;padding:25px}.dashboard-stats strong{font:2.5rem Georgia,serif;display:block}.dashboard-stats span,.dashboard-list span{color:#6b7d78}.dashboard-section{max-width:1050px;margin:20px auto}.dashboard-section h2{font:1.8rem Georgia,serif}.dashboard-list{display:grid;gap:10px}.dashboard-list article{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-top:1px solid var(--auth-line)}.dashboard-columns{max-width:1100px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.dashboard-columns .dashboard-section{margin:0}.dashboard-columns .dashboard-list article{display:block}.dashboard-empty{color:#71827e}.dashboard-skeleton{height:125px;border-radius:20px;background:linear-gradient(90deg,#ffffff55,#ffffffcc,#ffffff55);background-size:200%;animation:dash 1.2s infinite}@keyframes dash{to{background-position:-200%}}.dashboard-error{max-width:1100px;margin:40px auto;text-align:center}.trip-library{max-width:1100px;margin:25px auto;display:grid;gap:18px}.mongo-trip>div:first-child{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}.mongo-trip h2{font:2rem Georgia,serif;margin:8px 0}.mongo-trip>p{white-space:pre-line;color:#596e68}.trip-actions{display:flex;gap:8px!important;justify-content:flex-start!important;border-top:1px solid var(--auth-line);padding-top:18px}.trip-actions button,.pagination button,.dashboard-error button{border:1px solid var(--auth-line);border-radius:999px;padding:9px 14px;background:transparent;color:inherit;font-weight:700}.trip-actions .danger{color:#a33d3d}.pagination{display:flex;justify-content:center;align-items:center;gap:15px;padding:25px}.edit-backdrop{position:fixed;z-index:30;inset:0;background:#071d1acc;display:grid;place-items:center;padding:20px}.edit-trip{position:relative;width:min(650px,100%);max-height:90vh;overflow:auto;background:var(--auth-paper);border-radius:25px;padding:30px}.edit-trip h2{font:2rem Georgia,serif}.edit-trip label{display:block;font-weight:700;margin:14px 0}.edit-trip input,.edit-trip textarea{box-sizing:border-box;width:100%;margin-top:7px;padding:12px;border:1px solid var(--auth-line);border-radius:12px;background:white}.edit-dates{display:grid;grid-template-columns:1fr 1fr;gap:12px}.edit-close{position:absolute;right:20px;top:15px;border:0;background:transparent;font-size:1.5rem}.dark .dashboard-stats article,.dark .dashboard-section,.dark .mongo-trip{background:rgba(18,49,44,.8)}.dark .edit-trip input,.dark .edit-trip textarea{background:#163b35;color:white}@media(max-width:850px){.dashboard-heading,.dashboard-stats,.dashboard-cards,.dashboard-section,.dashboard-columns,.trip-library{margin-left:4vw;margin-right:4vw}.dashboard-heading{align-items:start;flex-direction:column}.dashboard-stats,.dashboard-cards{grid-template-columns:repeat(2,1fr)}.dashboard-columns{grid-template-columns:1fr}.trip-actions{flex-wrap:wrap}.edit-dates{grid-template-columns:1fr}}
+
+/* Profile dashboard dark theme is scoped to DashboardPage and its own navbar. */
+html[data-theme="dark"] .dashboard-page{min-height:100vh;padding-bottom:3rem;background:#061c17;color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-nav{border-bottom:1px solid #294d42;background:#061c17;color:#dce7e1;backdrop-filter:none}
+html[data-theme="dark"] .dashboard-page .dashboard-nav .auth-brand{color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-nav .auth-brand span{color:#a8c878}
+html[data-theme="dark"] .dashboard-page .dashboard-nav nav a,html[data-theme="dark"] .dashboard-page .dashboard-nav nav button{color:#dce7e1;transition:color .2s ease}
+html[data-theme="dark"] .dashboard-page .dashboard-nav nav a[href="/profile"]{color:#a8c878}
+html[data-theme="dark"] .dashboard-page .dashboard-nav nav a:hover,html[data-theme="dark"] .dashboard-page .dashboard-nav nav button:hover{color:#b8d58a}
+html[data-theme="dark"] .dashboard-page .dashboard-nav .account-avatar{background:#a8c878;color:#10231b}
+html[data-theme="dark"] .dashboard-page .dashboard-heading p{color:#a8c878}
+html[data-theme="dark"] .dashboard-page .dashboard-heading h1{color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-heading>div>span{color:#afc2b9}
+html[data-theme="dark"] .dashboard-page .dashboard-heading .account-primary{border:0;background:#a8c878;color:#10231b!important;transition:background-color .2s ease,transform .2s ease}
+html[data-theme="dark"] .dashboard-page .dashboard-heading .account-primary:hover{background:#b8d58a;color:#10231b!important;transform:translateY(-1px)}
+html[data-theme="dark"] .dashboard-page .dashboard-stats article,html[data-theme="dark"] .dashboard-page .dashboard-section{border-color:#31564a;background:#0c2d25;color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-stats article{transition:background-color .2s ease,border-color .2s ease}
+html[data-theme="dark"] .dashboard-page .dashboard-stats article:hover{border-color:#49675d;background:#102f27}
+html[data-theme="dark"] .dashboard-page .dashboard-stats strong{color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-stats span,html[data-theme="dark"] .dashboard-page .dashboard-list span{color:#afc2b9}
+html[data-theme="dark"] .dashboard-page .dashboard-section h2{color:#dce7e1}
+html[data-theme="dark"] .dashboard-page .dashboard-list article{border-color:#31564a}
+html[data-theme="dark"] .dashboard-page .dashboard-list article strong{color:#f1f0e7}
+html[data-theme="dark"] .dashboard-page .dashboard-empty,html[data-theme="dark"] .dashboard-page .dashboard-error{color:#afc2b9}
+html[data-theme="dark"] .dashboard-page .dashboard-error button{border-color:#31564a;background:#0c2d25;color:#a8c878}
+html[data-theme="dark"] .dashboard-page .dashboard-skeleton{border:1px solid #31564a;background:linear-gradient(90deg,#0c2d25 20%,#102f27 50%,#0c2d25 80%);background-size:200% 100%}
+@media(max-width:850px){html[data-theme="dark"] .dashboard-page .dashboard-heading,html[data-theme="dark"] .dashboard-page .dashboard-stats,html[data-theme="dark"] .dashboard-page .dashboard-section,html[data-theme="dark"] .dashboard-page .dashboard-columns{margin-left:4vw;margin-right:4vw}}
+
+/* Dark styling for saved trips and favorites route pages. */
+html[data-theme="dark"] .saved-trips-page,html[data-theme="dark"] .saved-favorites-page{min-height:100vh;padding-bottom:3rem;background:#061c17;color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .collection-nav,html[data-theme="dark"] .saved-favorites-page .collection-nav{border-bottom:1px solid #294d42;background:#061c17;color:#dce7e1;backdrop-filter:none}
+html[data-theme="dark"] .saved-trips-page .collection-nav .auth-brand,html[data-theme="dark"] .saved-favorites-page .collection-nav .auth-brand{color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .collection-nav .auth-brand span,html[data-theme="dark"] .saved-favorites-page .collection-nav .auth-brand span{color:#a8c878}
+html[data-theme="dark"] .saved-trips-page .collection-nav nav a,html[data-theme="dark"] .saved-trips-page .collection-nav nav button,html[data-theme="dark"] .saved-favorites-page .collection-nav nav a,html[data-theme="dark"] .saved-favorites-page .collection-nav nav button{color:#dce7e1}
+html[data-theme="dark"] .saved-trips-page .collection-nav nav a[href="/saved-trips"],html[data-theme="dark"] .saved-favorites-page .collection-nav nav a[href="/favorites"]{color:#a8c878}
+html[data-theme="dark"] .saved-trips-page .collection-nav nav a:hover,html[data-theme="dark"] .saved-trips-page .collection-nav nav button:hover,html[data-theme="dark"] .saved-favorites-page .collection-nav nav a:hover,html[data-theme="dark"] .saved-favorites-page .collection-nav nav button:hover{color:#b8d58a}
+html[data-theme="dark"] .saved-trips-page .collection-nav .account-avatar,html[data-theme="dark"] .saved-favorites-page .collection-nav .account-avatar{background:#a8c878;color:#10231b}
+html[data-theme="dark"] .saved-trips-page .dashboard-heading p,html[data-theme="dark"] .saved-favorites-page .dashboard-heading p{color:#a8c878}
+html[data-theme="dark"] .saved-trips-page .dashboard-heading h1,html[data-theme="dark"] .saved-favorites-page .dashboard-heading h1{color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .dashboard-heading>div>span,html[data-theme="dark"] .saved-favorites-page .dashboard-heading>div>span{color:#afc2b9}
+html[data-theme="dark"] .saved-trips-page .dashboard-heading .account-primary,html[data-theme="dark"] .saved-favorites-page .dashboard-heading .account-primary{background:#a8c878;color:#10231b!important}
+html[data-theme="dark"] .saved-trips-page .dashboard-heading .account-primary:hover,html[data-theme="dark"] .saved-favorites-page .dashboard-heading .account-primary:hover{background:#b8d58a;color:#10231b!important}
+html[data-theme="dark"] .saved-trips-page .mongo-trip,html[data-theme="dark"] .saved-favorites-page .mongo-trip,html[data-theme="dark"] .saved-trips-page .empty-library,html[data-theme="dark"] .saved-favorites-page .empty-library{border-color:#31564a;background:#0c2d25;color:#f1f0e7;box-shadow:none}
+html[data-theme="dark"] .saved-trips-page .mongo-trip:hover,html[data-theme="dark"] .saved-favorites-page .mongo-trip:hover{border-color:#49675d;background:#102f27}
+html[data-theme="dark"] .saved-trips-page .mongo-trip h2,html[data-theme="dark"] .saved-favorites-page .mongo-trip h2,html[data-theme="dark"] .saved-trips-page .empty-library h2,html[data-theme="dark"] .saved-favorites-page .empty-library h2{color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .mongo-trip>div:first-child>span,html[data-theme="dark"] .saved-favorites-page .mongo-trip>div:first-child>span{color:#a8c878}
+html[data-theme="dark"] .saved-trips-page .mongo-trip p,html[data-theme="dark"] .saved-favorites-page .mongo-trip p,html[data-theme="dark"] .saved-trips-page .empty-library p,html[data-theme="dark"] .saved-favorites-page .empty-library p{color:#afc2b9}
+html[data-theme="dark"] .saved-trips-page .trip-actions,html[data-theme="dark"] .saved-favorites-page .trip-actions{border-color:#31564a}
+html[data-theme="dark"] .saved-trips-page .trip-actions button,html[data-theme="dark"] .saved-favorites-page .trip-actions button{border-color:#31564a;background:#12372e;color:#dce7e1;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
+html[data-theme="dark"] .saved-trips-page .trip-actions button:hover,html[data-theme="dark"] .saved-favorites-page .trip-actions button:hover{border-color:#49675d;background:#1b463a;color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .trip-actions button.active,html[data-theme="dark"] .saved-favorites-page .trip-actions button.active{border-color:#a8c878;background:#a8c878;color:#10231b}
+html[data-theme="dark"] .saved-trips-page .trip-actions .danger,html[data-theme="dark"] .saved-favorites-page .trip-actions .danger{border-color:#6a3d3d;background:#2a1717;color:#d96b6b}
+html[data-theme="dark"] .saved-trips-page .trip-actions .danger:hover,html[data-theme="dark"] .saved-favorites-page .trip-actions .danger:hover{border-color:#925454;background:#3a2020;color:#f08b8b}
+html[data-theme="dark"] .saved-trips-page .pagination,html[data-theme="dark"] .saved-favorites-page .pagination{color:#afc2b9}
+html[data-theme="dark"] .saved-trips-page .pagination button,html[data-theme="dark"] .saved-favorites-page .pagination button{border-color:#31564a;background:#12372e;color:#dce7e1}
+html[data-theme="dark"] .saved-trips-page .pagination button:disabled,html[data-theme="dark"] .saved-favorites-page .pagination button:disabled{opacity:.5}
+html[data-theme="dark"] .saved-trips-page .edit-trip,html[data-theme="dark"] .saved-favorites-page .edit-trip{border:1px solid #31564a;background:#0c2d25;color:#f1f0e7}
+html[data-theme="dark"] .saved-trips-page .edit-trip input,html[data-theme="dark"] .saved-trips-page .edit-trip textarea,html[data-theme="dark"] .saved-favorites-page .edit-trip input,html[data-theme="dark"] .saved-favorites-page .edit-trip textarea{border-color:#31564a!important;background:#09241e!important;color:#f1f0e7!important}
+html[data-theme="dark"] .saved-trips-page .edit-trip input:focus,html[data-theme="dark"] .saved-trips-page .edit-trip textarea:focus,html[data-theme="dark"] .saved-favorites-page .edit-trip input:focus,html[data-theme="dark"] .saved-favorites-page .edit-trip textarea:focus{border-color:#a8c878;box-shadow:0 0 0 3px rgba(168,200,120,.14)}
+html[data-theme="dark"] .saved-trips-page .edit-trip .account-primary,html[data-theme="dark"] .saved-favorites-page .edit-trip .account-primary{background:#a8c878;color:#10231b!important}
+html[data-theme="dark"] .saved-trips-page .edit-close,html[data-theme="dark"] .saved-favorites-page .edit-close{color:#f1f0e7}
+@media(max-width:850px){html[data-theme="dark"] .saved-trips-page .dashboard-heading,html[data-theme="dark"] .saved-favorites-page .dashboard-heading,html[data-theme="dark"] .saved-trips-page .trip-library,html[data-theme="dark"] .saved-favorites-page .trip-library{margin-left:4vw;margin-right:4vw}}
+html[data-theme="dark"] .saved-trips-page .trip-budget,html[data-theme="dark"] .saved-favorites-page .trip-budget{color:#c18a2d;font-weight:800}
+
+/* Light-mode primary account actions share the soft olive CTA treatment. */
+html:not([data-theme="dark"]) .dashboard-page .dashboard-heading .account-primary,
+html:not([data-theme="dark"]) .saved-trips-page .dashboard-heading .account-primary,
+html:not([data-theme="dark"]) .saved-favorites-page .dashboard-heading .account-primary {
+  border: 1px solid #a8c878;
+  background: #b8d878;
+  color: #102f27 !important;
+  transition: background-color .2s ease, transform .2s ease;
+}
+html:not([data-theme="dark"]) .dashboard-page .dashboard-heading .account-primary:hover,
+html:not([data-theme="dark"]) .saved-trips-page .dashboard-heading .account-primary:hover,
+html:not([data-theme="dark"]) .saved-favorites-page .dashboard-heading .account-primary:hover {
+  background: #a8c968;
+  color: #102f27 !important;
+}

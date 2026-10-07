@@ -109,3 +109,24 @@ html[data-theme="dark"] #popular-destinations .destination-grid .group > div > b
   color: #000000 !important;
   opacity: 1 !important;
 }
+
+/* Home page dark palette touch-ups. These overrides leave the light theme and layout intact. */
+html[data-theme="dark"] .site-shell .nav .brand{color:#f1f0e7}
+html[data-theme="dark"] .site-shell .nav .brand span{color:#a8c878}
+html[data-theme="dark"] .site-shell .nav-links button{color:#f1f0e7}
+html[data-theme="dark"] .site-shell .nav-links button:hover,html[data-theme="dark"] .site-shell .nav-links button:focus-visible{color:#a8c878}
+html[data-theme="dark"] .site-shell .nav-links.open{border:1px solid #31564a;background:rgba(12,45,37,.96)}
+html[data-theme="dark"] .site-shell .nav .theme-toggle{border-color:#31564a;background:#102f27;color:#f1f0e7}
+html[data-theme="dark"] .site-shell .nav .theme-toggle:hover{border-color:#a8c878;background:#a8c878;color:#10231b!important}
+html[data-theme="dark"] .site-shell .nav .avatar-button{background:#a8c878!important;color:#10231b!important;transition:background-color .2s ease,color .2s ease}
+html[data-theme="dark"] .site-shell .nav .avatar-button:hover{background:#b8d58a!important;color:#10231b!important}
+html[data-theme="dark"] .site-shell .nav .account-dropdown{border:1px solid #31564a;background:#0c2d25;box-shadow:0 16px 36px rgba(0,0,0,.28)}
+html[data-theme="dark"] .site-shell .nav .account-dropdown button{color:#f1f0e7}
+html[data-theme="dark"] .site-shell .nav .account-dropdown button:hover,html[data-theme="dark"] .site-shell .nav .account-dropdown button:focus-visible{background:#12372e;color:#a8c878}
+html[data-theme="dark"] .site-shell .hero h1{color:#f1f0e7}
+html[data-theme="dark"] .site-shell .hero h1 em{color:#a8c878}
+html[data-theme="dark"] .site-shell .hero .hero-copy{color:#d0ddd7}
+html[data-theme="dark"] .site-shell .hero .hero-actions>.primary{border-color:transparent;background:#a8c878;color:#10231b!important}
+html[data-theme="dark"] .site-shell .hero .hero-actions>.primary:hover{background:#b8d58a;color:#10231b!important}
+html[data-theme="dark"] .site-shell .hero .hero-actions>.ghost{border-color:#526c62;background:rgba(12,45,37,.75);color:#f1f0e7;backdrop-filter:none}
+html[data-theme="dark"] .site-shell .hero .hero-actions>.ghost:hover{border-color:#526c62;background:#12372e;color:#f1f0e7}
