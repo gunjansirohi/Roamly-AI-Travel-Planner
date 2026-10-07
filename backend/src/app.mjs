@@ -10,7 +10,7 @@ export function createApp() {
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
 
-  // CORS — must run before rate limiting and other middleware
+ 
   const allowedOrigins = [
     "https://roamly-ai-travel-planner-t.vercel.app",
     "http://localhost:5173",
