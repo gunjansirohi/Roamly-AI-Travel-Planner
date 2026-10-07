@@ -105,7 +105,7 @@ export function createApp() {
   });
 
   // API routes
-  app.use(createApiRouter());
+  app.use("/api",createApiRouter());
 
   app.use(notFoundHandler);
   app.use(errorHandler);
