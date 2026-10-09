@@ -7,6 +7,13 @@ html[data-theme="dark"] .booking-hub .booking-tabs button.active {
   background: rgba(16, 40, 35, .76);
   color: #edf5ef;
 }
+html[data-theme="dark"] .booking-hub .booking-tabs button.active,
+html[data-theme="dark"] .booking-hub .booking-tabs button.active:hover {
+  background: #80864A;
+  color: #10150d;
+}
+html[data-theme="dark"] .booking-hub .booking-tabs button.active b,
+html[data-theme="dark"] .booking-hub .booking-tabs button.active span { color: #10150d; }
 html[data-theme="dark"] .booking-hub .booking-tabs button:hover {
   border-color: rgba(173, 205, 177, .5);
   background: rgba(26, 57, 49, .9);
@@ -183,3 +190,5 @@ html[data-theme="dark"] .flight-modal .flight-modal-actions>button {
   color: #dce7e1;
   padding: .6rem .8rem;
 }
+
+.flight-form button,.flight-bottom a,.flight-modal-actions a,.flight-filters button.active{background:#80864A}
